@@ -7,6 +7,7 @@ import (
 	"github.com/stianeikeland/go-rpio"
 	"net/http"
 	"path/filepath"
+	"runtime"
 	"simonwaldherr.de/go/golibs/as"
 	"simonwaldherr.de/go/golibs/cachedfile"
 	"simonwaldherr.de/go/golibs/file"
@@ -88,6 +89,75 @@ func init() {
 		fmt.Printf("Rezepte geladen:\n")
 		fmt.Printf("Ende.\n\n")
 	}
+	runtime.GOMAXPROCS(4)
+}
+
+func scaleDelay(scaleDelta int, timeout time.Duration) {
+	hx711, err := waage.NewHx711("GPIO6", "GPIO5")
+
+	if err != nil {
+		fmt.Println("NewHx711 error:", err)
+		return
+	}
+
+	defer hx711.Shutdown()
+
+	err = hx711.Reset()
+	if err != nil {
+		fmt.Println("Reset error:", err)
+		return
+	}
+
+	hx711.AdjustZero = 128663
+	hx711.AdjustScale = 385.000000
+
+	c1 := make(chan bool, 1)
+	go func() {
+		var tara = []float64{}
+
+		var data float64
+		for i := 0; i < 3; i++ {
+			time.Sleep(200 * time.Microsecond)
+
+			data, err := hx711.ReadDataMedian(11)
+			if err != nil {
+				fmt.Println("ReadDataRaw error:", err)
+				continue
+			}
+
+			//fmt.Println(data)
+			tara = append(tara, data)
+		}
+		taraAvg := float64(xmath.Round(xmath.Arithmetic(tara)))
+
+		fmt.Printf("new tara set to %v\n", taraAvg)
+
+		for {
+			time.Sleep(200 * time.Microsecond)
+			data2, err := hx711.ReadDataRaw()
+
+			if err != nil {
+				fmt.Println("ReadDataRaw error:", err)
+				continue
+			}
+
+			data = float64(data2-hx711.AdjustZero) / hx711.AdjustScale
+			fmt.Println(xmath.Round(data - taraAvg))
+			if int(data-taraAvg) > scaleDelta {
+				fmt.Println("voll")
+				return
+			}
+
+		}
+		c1 <- true
+	}()
+
+	select {
+	case _ = <-c1:
+		return
+	case <-time.After(timeout):
+		return
+	}
 }
 
 func main() {
@@ -111,61 +181,7 @@ func main() {
 		return
 	}
 
-	hx711, err := waage.NewHx711("GPIO6", "GPIO5")
-
-	if err != nil {
-		fmt.Println("NewHx711 error:", err)
-		return
-	}
-
-	defer hx711.Shutdown()
-
-	err = hx711.Reset()
-	if err != nil {
-		fmt.Println("Reset error:", err)
-		return
-	}
-
-	hx711.AdjustZero = 128663
-	hx711.AdjustScale = 385.000000
-
-	var tara = []float64{}
-
-	var data float64
-	for i := 0; i < 3; i++ {
-		time.Sleep(200 * time.Microsecond)
-
-		data, err = hx711.ReadDataMedian(11)
-		if err != nil {
-			fmt.Println("ReadDataRaw error:", err)
-			continue
-		}
-
-		//fmt.Println(data)
-		tara = append(tara, data)
-	}
-	taraAvg := float64(xmath.Round(xmath.Arithmetic(tara)))
-
-	fmt.Printf("new tara set to %v\n", taraAvg)
-
-	for {
-		time.Sleep(200 * time.Microsecond)
-		//data, err = hx711.ReadDataMedian(6)
-		data2, err := hx711.ReadDataRaw()
-
-		if err != nil {
-			fmt.Println("ReadDataRaw error:", err)
-			continue
-		}
-
-		data = float64(data2-hx711.AdjustZero) / hx711.AdjustScale
-		/*
-			if data-taraAvg > 50 {
-				fmt.Println("voll")
-			}
-		*/
-		go fmt.Println(xmath.Round(data - taraAvg))
-	}
+	scaleDelay(40, 2*time.Minute)
 
 	return
 
