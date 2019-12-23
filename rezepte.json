@@ -1,0 +1,172 @@
+[
+  {
+    "Name": "Mojito",
+    "Zutaten": [
+      {
+        "Name": "Rum",
+        "Menge": 50
+      },
+      {
+        "Name": "Zuckersirup",
+        "Menge": 20
+      },
+      {
+        "Name": "Zitronensaft",
+        "Menge": 25
+      },
+      {
+        "Name": "Soda",
+        "Menge": 60
+      }
+    ],
+    "Kommentar": "Die unbehandelten Limetten waschen und die Limettenenden abschneiden. Nun die Limetten achteln und zusammen mit dem braunen Zucker und der Minze in ein Longdrinkglas geben. Die Limettenstücke und auch die Minzeblätter mit einem Mörser etwas zerdrücken - aber nicht zu viel also nicht komplett zerquetschen. Zum Schluss das Glas mit den Crushed Ice füllen, den weißen Rum dazu und das Glas mit dem Soda auffüllen. Der Mojito kann beliebig mit ein paar Limettenscheiben und Minzeblätter garniert werden."
+  },
+  {
+    "Name": "Whisky Sour",
+    "Zutaten": [
+      {
+        "Name": "Whisky",
+        "Menge": 50
+      },
+      {
+        "Name": "Zuckersirup",
+        "Menge": 20
+      },
+      {
+        "Name": "Zitronensaft",
+        "Menge": 10
+      },
+      {
+        "Name": "Soda",
+        "Menge": 20
+      }
+    ],
+    "Kommentar": "Den Whisky mit Zitronensaft und Zuckersirup mit einigen Eiswürfeln im Shaker gut schütteln. In ein Glas mit einigen Eiswürfeln abseihen und mit Zitronenspalte dekorieren."
+  },
+  {
+    "Name": "Colonel Collins",
+    "Zutaten": [
+      {
+        "Name": "Whisky",
+        "Menge": 50
+      },
+      {
+        "Name": "Zuckersirup",
+        "Menge": 20
+      },
+      {
+        "Name": "Zitronensaft",
+        "Menge": 10
+      },
+      {
+        "Name": "Soda",
+        "Menge": 20
+      }
+    ],
+    "Kommentar": "Whiskey mit Sirup und Zitronensaft in einem Tumbler-Glas mit Eiswürfeln umrühren. Mit kalten Soda auffüllen und einer Cocktailkirsche garnieren. Es gibt für nahezu jede Spirituosenart den passenden Collins-Cocktail. So wird die Rum-Variante als Ron Collins oder Pedro Collins bezeichnet. Ein Sandy Collins verwendet Scotch Whisky, in einem Mike Collins kommt Irish Whiskey zum Einsatz, und ein Comrade Collins basiert auf Vodka."
+  },
+  {
+    "Name": "Bramble",
+    "Zutaten": [
+      {
+        "Name": "Gin",
+        "Menge": 50
+      },
+      {
+        "Name": "Zitronensaft",
+        "Menge": 20
+      },
+      {
+        "Name": "Zuckersirup",
+        "Menge": 10
+      }
+    ],
+    "Kommentar": "Zunächst die Brombeeren in den Tumbler geben und mit einem Stößel leicht zerdrücken. Anschließend den Tumbler mit Crushed Ice oder Eiswürfeln auffülle. Alle flüssigen Zutaten, also Gin, Zitronensaft & Zuckersirup in den Tumbler füllen und mit einem Barlöffel umrühren. Nach Belieben mit 1-2 Brombeeren dekorieren und fertig."
+  },
+  {
+    "Name": "Gin Fizz",
+    "Zutaten": [
+      {
+        "Name": "Gin",
+        "Menge": 50
+      },
+      {
+        "Name": "Zitronensaft",
+        "Menge": 30
+      },
+      {
+        "Name": "Zuckersirup",
+        "Menge": 20
+      },
+      {
+        "Name": "Soda",
+        "Menge": 100
+      }
+    ],
+    "Kommentar": "Gin, Zitronensaft und Zuckersirup und ein paar Eiswürfel zusammen in den Shaker geben, Sehr gut schütteln, da nur so die schaumige Krone des Gin Fizz entstehen kann. Hierbei braucht man auch keine Angst vom Verwässern des Drinks zu haben, da dieser später sowieso mit Soda-Wasser aufgefüllt wird, Danach in ein Longdrinkglas mit Eiswürfeln abseihen, Mit Soda auffüllen, Als Garnitur bietet sich eine Zitronenscheibe an."
+  },
+  {
+    "Name": "Gin Tonic",
+    "Zutaten": [
+      {
+        "Name": "Gin",
+        "Menge": 50
+      },
+      {
+        "Name": "Tonic Water",
+        "Menge": 250
+      }
+    ],
+    "Kommentar": "zuerst füllt man das Glas komplett mit großen Eiswürfeln, 4 – 6cl Gin drübergießen („pouren“), Glas mit vorgekühltem Tonic Water auffüllen, garnieren und servieren"
+  },
+  {
+    "Name": "Gin Buck TonicStyle",
+    "Zutaten": [
+      {
+        "Name": "Gin",
+        "Menge": 20
+      },
+      {
+        "Name": "Zitronensaft",
+        "Menge": 20
+      },
+      {
+        "Name": "Tonic Water",
+        "Menge": 100
+      }
+    ],
+    "Kommentar": "Ein Old-fashioned Glas mit einigen Eiswürfeln füllen, und Zitronensaft direkt ins Glas geben, Mit Ginger Ale auffüllen und einmal umrühren, Mit Zitronenspalte garnieren, oder die Zitronenspalte direkt ins Glas geben."
+  },
+  {
+    "Name": "Dry Martini",
+    "Zutaten": [
+      {
+        "Name": "Gin",
+        "Menge": 50
+      },
+      {
+        "Name": "Vermouth",
+        "Menge": 10
+      }
+    ],
+    "Kommentar": "Eis, Gin und Vermouth in ein Rührglas geben und rühren,in ein gekühltes Martiniglas abseihen, das restliche Eis soll dabei nicht mit ins Glas,mit Zitronenschale und Olive garnieren"
+  },
+  {
+    "Name": "Old Fashioned",
+    "Zutaten": [
+      {
+        "Name": "Whisky",
+        "Menge": 60
+      },
+      {
+        "Name": "Zuckersirup",
+        "Menge": 10
+      },
+      {
+        "Name": "Cocktailbitter",
+        "Menge": 5
+      }
+    ],
+    "Kommentar": "Angostura, Wasser und Zucker vermengen, Whisky zugeben und rühren, bis sich der Zucker aufgelöst hat. Jetzt das Eis draufschütten und rühren, rühren, rühren, bis die Eiswürfel im Drink untergehen. Dann noch mal Eiswürfel zugeben und weiterrühren, bis das Glas möglichst voll ist. Orangenzeste über dem Drink knicken, in den Cocktail werfen. Trinken!"
+  }
+]

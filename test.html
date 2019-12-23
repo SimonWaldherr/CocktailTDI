@@ -1,0 +1,233 @@
+<!DOCTYPE html><html>
+<head>
+  <meta charset="utf-8" />
+  <title>ZITEC Eti</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <script>
+    function changeImg() {
+      var ventil = (document.getElementById('qventil').value);
+      var dauer = (document.getElementById('qdauer').value);
+      if((ventil > 0)&&(dauer > 0)) {
+          document.getElementById('etiimg').src = 'http://192.168.178.21:8080/test/'+ventil+'/'+dauer;
+      } else {
+          document.getElementById('etiimg').src = 'http://192.168.178.21:8080/test/'+ventil+'/0';
+      }
+      
+    }
+    
+    function changeImg2() {
+      var ventil = (document.getElementById('qventil').value);
+      var dauer = (document.getElementById('qdauer').value);
+      if((ventil > 0)&&(dauer > 0)) {
+          document.getElementById('etiimg').src = 'http://192.168.178.21:8080/test/'+ventil+'/1';
+      } else {
+          document.getElementById('etiimg').src = 'http://192.168.178.21:8080/test/'+ventil+'/1';
+      }
+      
+    }
+  </script>
+  <style type="text/css" media="screen">
+body {
+    background: #ddd;
+}
+
+.baf.grey.dimension {
+    top: -4px;
+}
+
+.baf-icomoon.big {
+    margin: 1px 0px;
+}
+
+h1 a, h1 a:visited {
+    text-decoration: none;
+    color: black;
+}
+
+
+table input {
+    //width: 100%;
+}
+
+td {
+    padding: 5px;
+}
+
+tr:nth-child(even) {
+    background: #CCC;
+}
+
+tr th {
+    background: #999;
+    font-size: larger;
+}
+
+tr:nth-child(odd) {
+    background: #FFF;
+}
+
+label {
+    min-width: 80px;
+    display: inline-block;
+}
+
+.box, #header {
+    width: 80%;
+    min-width: 515px;
+    background-color: white;
+    box-shadow: 0px 0px 12px 0px #000000;
+    -webkit-box-shadow: 0px 0px 12px 0px #000000;
+    margin: 25px auto;
+    padding: 5px 25px 45px 25px;
+    border-radius: 2px;
+}
+
+#header {
+    height: 50px;
+}
+
+.box {
+    padding-top: 25px;
+    text-align: center;
+}
+
+.box * {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.box a:hover {
+    text-decoration: none;
+}
+
+.box small {
+    margin-left: 15px;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.box li {
+    list-style: disc;
+}
+
+input, select {
+    width: 220px;
+    font-size: x-large;
+    padding: 5px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-align: center;
+    border: 1px solid gray;
+}
+
+select {
+    padding: 4px;
+}
+input[type=submit] {
+    margin-left: 4px;
+}
+input:hover, select:hover {
+    background: #efefef;
+}
+
+input[type=submit]:hover {
+    background: #cbcbcb;
+}
+
+#logo {
+    position: absolute;
+    right: 10%;
+    top: 25px;
+}
+
+table {
+    table-layout: fixed;
+}
+
+td {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#stable tr.serp:hover {
+    background: #eee;
+    cursor: pointer;
+}
+
+h1 a {
+    text-decoration: none;
+    color: black;
+}
+
+button, select, input {
+  width: 220px;
+  font-size: x-large;
+  padding: 5px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-align: center;
+  border: 1px solid gray;
+}
+
+label {
+  width: 200px;
+}
+
+button, input, select, textarea {
+  margin: 3px;
+}
+
+input {
+  width: 208px;
+}
+
+.resu{
+  width: 500px;
+}
+
+#top {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 20px;
+  right: 0px;
+  background: #888888;
+}
+
+  </style>
+</head>
+<body>
+<!--<div id="top"></div>-->
+<div id="header">
+<h1>CocktailTDI-Test</h1>
+
+</div><div class="box" style="overflow-x:scroll;">
+<form name="umz" id="umz" action="" method="POST">
+<table style="margin:auto;"><tr><td>
+<label for="qventil">Ventil</label><select name="qventil" id="qventil" size="1" onchange="">
+  <option value="2">1</option>
+  <option value="3">2</option>
+  <option value="4">3</option>
+  <option value="5">4</option>
+  <option value="6">5</option>
+  <option value="7">6</option>
+  <option value="8">7</option>
+  <!--<option value="2">1</option>-->
+</select><br/>
+<!--<label for="qventil">Ventil</label><input type="text" name="qventil" id="qventil" value=""><br/>-->
+<label for="qdauer">Dauer</label><input type="text" name="qdauer" id="qdauer" value=""><br/>
+
+<input type="hidden" name="save" id="save" value="true">
+<input type="submit" name="speichern" id="speichern" value="testen" onclick="changeImg(); return false;">
+<input type="submit" name="speichern" id="speichern" value="aus" onclick="changeImg2(); return false;">
+</td><td>
+<!--<img style="max-height: 290px" src="http://10.0.0.228/eti/infoeti/pics/info_kanban.png" id="etiimg" />-->
+<img style="max-height: 290px; visibility:hidden;" src="http://10.0.0.228/eti/infoeti/pics/info_brueckner.png" id="etiimg" />
+</td></tr></table>
+<?php
+
+}
+
+?>
+</form>
+</div>
+</body>
+</html>
