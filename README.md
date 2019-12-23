@@ -4,6 +4,12 @@ work in progress
 
 ## howto
 
+### ad your public key to the raspberry
+
+```sh
+ssh-copy-id pi@192.168.178.202
+```
+
 ### compile
 
 ```sh
@@ -11,6 +17,10 @@ work in progress
 ```
 
 ### copy to Raspberry
+
+```sh
+scp ./cocktail pi@192.168.178.202:/home/pi/bin/cocktail
+```
 
 ### run
 
