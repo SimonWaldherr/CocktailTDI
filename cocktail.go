@@ -129,7 +129,7 @@ func main() {
 	hx711.AdjustScale = 385.000000
 
 	var data float64
-	for i := 0; i < 10; i++ {
+        for {
 		time.Sleep(200 * time.Microsecond)
 
 		data, err = hx711.ReadDataMedian(11)
