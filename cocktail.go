@@ -11,6 +11,7 @@ import (
 	"simonwaldherr.de/go/golibs/cachedfile"
 	"simonwaldherr.de/go/golibs/file"
 	"simonwaldherr.de/go/golibs/gopath"
+	"simonwaldherr.de/go/golibs/xmath"
 	"simonwaldherr.de/go/gwv"
 	"strings"
 	"time"
@@ -128,8 +129,10 @@ func main() {
 	hx711.AdjustZero = 128663
 	hx711.AdjustScale = 385.000000
 
+	var tara = []float64{}
+
 	var data float64
-	for {
+	for i := 0; i < 3; i++ {
 		time.Sleep(200 * time.Microsecond)
 
 		data, err = hx711.ReadDataMedian(11)
@@ -138,7 +141,30 @@ func main() {
 			continue
 		}
 
-		fmt.Println(data)
+		//fmt.Println(data)
+		tara = append(tara, data)
+	}
+	taraAvg := float64(xmath.Round(xmath.Arithmetic(tara)))
+
+	fmt.Printf("new tara set to %v\n", taraAvg)
+
+	for {
+		time.Sleep(200 * time.Microsecond)
+		//data, err = hx711.ReadDataMedian(6)
+		data2, err := hx711.ReadDataRaw()
+
+		if err != nil {
+			fmt.Println("ReadDataRaw error:", err)
+			continue
+		}
+
+		data = float64(data2-hx711.AdjustZero) / hx711.AdjustScale
+		/*
+			if data-taraAvg > 50 {
+				fmt.Println("voll")
+			}
+		*/
+		go fmt.Println(xmath.Round(data - taraAvg))
 	}
 
 	return
