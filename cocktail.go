@@ -227,6 +227,7 @@ func main() {
 			}
 
 			pumpe.Output()
+			entluft.Input()
 			//time.Sleep(time.Second * 1)
 
 			fmt.Println(req.RequestURI)
@@ -246,6 +247,8 @@ func main() {
 			go func() {
 				time.Sleep(2 * time.Second)
 				testPin.Output()
+				master.Output()
+				entluft.Input()
 			}()
 
 			fmt.Println("starting scale")
@@ -254,9 +257,10 @@ func main() {
 
 			fmt.Println("scale delay ready")
 
+			master.Input()
+			entluft.Output()
+			time.Sleep(time.Second * 5)
 			testPin.Input()
-			time.Sleep(time.Second * 1)
-
 			fmt.Println("stop pump")
 
 			pumpe.Input()
