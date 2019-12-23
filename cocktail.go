@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	waage "github.com/MichaelS11/go-hx711"
 	"github.com/stianeikeland/go-rpio"
 	"net/http"
 	"path/filepath"
@@ -10,7 +11,6 @@ import (
 	"simonwaldherr.de/go/golibs/cachedfile"
 	"simonwaldherr.de/go/golibs/file"
 	"simonwaldherr.de/go/golibs/gopath"
-	waage "github.com/MichaelS11/go-hx711"
 	"simonwaldherr.de/go/gwv"
 	"strings"
 	"time"
@@ -129,7 +129,7 @@ func main() {
 	hx711.AdjustScale = 385.000000
 
 	var data float64
-        for {
+	for {
 		time.Sleep(200 * time.Microsecond)
 
 		data, err = hx711.ReadDataMedian(11)
@@ -219,7 +219,7 @@ func main() {
 						fmt.Printf("    %v: %v\n", zut.Name, zut.Menge)
 						zutatPin := rpio.Pin(pins[zutaten[zut.Name]])
 						vorlaufdauer := time.Millisecond * aufladedauer
-						ansteuerdauer := time.Millisecond * time.Duration(zut.Menge*zeitmultiplikator) 
+						ansteuerdauer := time.Millisecond * time.Duration(zut.Menge*zeitmultiplikator)
 						fmt.Printf("vorlaufdauer: %v\tansteuerdauer: %v\n", vorlaufdauer, ansteuerdauer)
 						zutatPin.Output()
 						time.Sleep(vorlaufdauer)
