@@ -125,7 +125,6 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 				continue
 			}
 
-			//fmt.Println(data)
 			tara = append(tara, data)
 		}
 		taraAvg := float64(xmath.Round(xmath.Arithmetic(tara)))
@@ -145,11 +144,10 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 			fmt.Println(xmath.Round(data - taraAvg))
 			if int(data-taraAvg) > scaleDelta {
 				fmt.Println("voll")
+				c1 <- true
 				return
 			}
-
 		}
-		c1 <- true
 	}()
 
 	select {
@@ -161,7 +159,8 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 }
 
 func main() {
-	dir := gopath.Dir()
+	//dir := gopath.Dir()
+	dir := gopath.WD()
 	fmt.Println("DIR 1:", gopath.WD())
 	fmt.Println("DIR 2:", dir)
 	HTTPD := gwv.NewWebServer(8080, 60)
@@ -180,10 +179,6 @@ func main() {
 		fmt.Println("HostInit error:", err)
 		return
 	}
-
-	scaleDelay(40, 2*time.Minute)
-
-	return
 
 	defer rpio.Close()
 
@@ -232,19 +227,38 @@ func main() {
 			}
 
 			pumpe.Output()
-			time.Sleep(time.Second * 1)
+			//time.Sleep(time.Second * 1)
+
+			fmt.Println(req.RequestURI)
 
 			testStr := strings.Replace(req.RequestURI, "/test/", "", 1)
 			testArr := strings.Split(testStr, "/")
 			testPin := rpio.Pin(pins[int(as.Int(testArr[0]))])
-			vorlaufdauer := time.Millisecond * aufladedauer
-			ansteuerdauer := time.Millisecond * time.Duration(int(as.Int(testArr[1]))*int(as.Int(multiplikator[int(as.Int(testArr[0]))])))
-			fmt.Printf("vorlaufdauer: %v\tansteuerdauer: %v\n", vorlaufdauer, ansteuerdauer)
-			testPin.Output()
-			time.Sleep(vorlaufdauer)
-			time.Sleep(ansteuerdauer)
+			//vorlaufdauer := time.Millisecond * aufladedauer
+			//ansteuerdauer := time.Millisecond * time.Duration(int(as.Int(testArr[1]))*int(as.Int(multiplikator[int(as.Int(testArr[0]))])))
+			//fmt.Printf("vorlaufdauer: %v\tansteuerdauer: %v\n", vorlaufdauer, ansteuerdauer)
+
+			//time.Sleep(vorlaufdauer)
+			//time.Sleep(ansteuerdauer)
+
+			fmt.Println("starting go func")
+
+			go func() {
+				time.Sleep(2 * time.Second)
+				testPin.Output()
+			}()
+
+			fmt.Println("starting scale")
+
+			scaleDelay(int(as.Int(testArr[0])), 1*time.Minute)
+
+			fmt.Println("scale delay ready")
+
 			testPin.Input()
 			time.Sleep(time.Second * 1)
+
+			fmt.Println("stop pump")
+
 			pumpe.Input()
 			return "", http.StatusOK
 		}, gwv.HTML),
