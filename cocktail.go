@@ -109,6 +109,7 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 	}
 
 	hx711.AdjustZero = 128663
+	//hx711.AdjustZero = 128000
 	hx711.AdjustScale = 385.000000
 
 	c1 := make(chan bool, 1)
@@ -124,6 +125,7 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 				fmt.Println("ReadDataRaw error:", err)
 				continue
 			}
+			//data = data * -1
 
 			tara = append(tara, data)
 		}
@@ -140,9 +142,12 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 				continue
 			}
 
+			//data2 = data2 * -1
+
 			data = float64(data2-hx711.AdjustZero) / hx711.AdjustScale
 			fmt.Println(xmath.Round(data - taraAvg))
 			if int(data-taraAvg) > scaleDelta {
+				fmt.Printf("data: %v, taraAvg: %v, xdata: %v, scaleDelta: %v\n", data, taraAvg, data-taraAvg, scaleDelta)
 				fmt.Println("voll")
 				c1 <- true
 				return
@@ -253,7 +258,7 @@ func main() {
 
 			fmt.Println("starting scale")
 
-			scaleDelay(int(as.Int(testArr[0])), 1*time.Minute)
+			scaleDelay(int(as.Int(testArr[1])), 1*time.Minute)
 
 			fmt.Println("scale delay ready")
 
