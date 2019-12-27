@@ -59,8 +59,8 @@ func init() {
 	}
 
 	zutaten = map[string]int{
-		"Whisky":       2,
-		"Zuckersirup":  3,
+		"Cola":         2,
+		"Fanta":        3,
 		"Gin":          4,
 		"Zitronensaft": 5,
 		"Tonic Water":  6,
@@ -232,7 +232,9 @@ func main() {
 			}
 
 			pumpe.Output()
+			fmt.Println("pumpe an")
 			entluft.Input()
+			fmt.Println("entlüft aus")
 			//time.Sleep(time.Second * 1)
 
 			fmt.Println(req.RequestURI)
@@ -252,6 +254,7 @@ func main() {
 			go func() {
 				time.Sleep(2 * time.Second)
 				testPin.Output()
+				fmt.Println("pumpe an")
 				master.Output()
 				entluft.Input()
 			}()
