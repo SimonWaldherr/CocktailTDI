@@ -32,6 +32,35 @@
       }
     ],
     "Kommentar": "100% Fanta."
+  },
+  {
+    "Name": "Gin Tonic",
+    "Zutaten": [
+      {
+        "Name": "Gin",
+        "Menge": 35
+      },
+      {
+        "Name": "Tonic",
+        "Menge": 110
+      }
+    ],
+    "Kommentar": "zuerst füllt man das Glas komplett mit großen Eiswürfeln, 4 – 6cl Gin drübergießen („pouren“), Glas mit vorgekühltem Tonic Water auffüllen, garnieren und servieren"
+  },
+  {
+    "Name": "Tschunk",
+    "Zutaten": [
+      {
+        "Name": "Rum",
+        "Menge": 9
+      },
+      {
+        "Name": "Mate",
+        "Menge": 45
+      }
+    ],
+    "Kommentar": "Limettenwürfel einfügen, braunen Zucker hinzufügen, Limetten zerdrücken, crushed Ice hinzufügen, in die Maschine stellen."
   }
 ]
+        
         
