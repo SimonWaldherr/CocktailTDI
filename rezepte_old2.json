@@ -1,0 +1,37 @@
+[
+  {
+    "Name": "Cola",
+    "Zutaten": [
+      {
+        "Name": "Cola",
+        "Menge": 160
+      }
+    ],
+    "Kommentar": "100% Cola."
+  },
+  {
+    "Name": "Spezi",
+    "Zutaten": [
+      {
+        "Name": "Cola",
+        "Menge": 80
+      },
+      {
+        "Name": "Fanta",
+        "Menge": 80
+      }
+    ],
+    "Kommentar": "Cola und Fanta halb/halb."
+  },
+  {
+    "Name": "Fanta",
+    "Zutaten": [
+      {
+        "Name": "Fanta",
+        "Menge": 160
+      }
+    ],
+    "Kommentar": "100% Fanta."
+  }
+]
+        

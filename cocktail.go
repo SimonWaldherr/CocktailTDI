@@ -59,13 +59,12 @@ func init() {
 	}
 
 	zutaten = map[string]int{
-		"Cola":   2,
-		"Fanta":  3,
-		"Cola1":  4,
-		"Fanta1": 5,
-		"Cola2":  6,
-		"Cola3":  7,
-		"Cola4":  8,
+		"Rum":   2,
+		"Fanta": 3,
+		"Cola":  4,
+		"Tonic": 5,
+		"Gin":   6,
+		"Mate":  7,
 	}
 
 	err := rpio.Open()
