@@ -1,0 +1,78 @@
+#!/bin/sh
+# Start/stop the cocktailTDI.
+
+DESC="Cocktail TDI"
+DNAME=$(date "+%F_%H%M")
+NAME=cocktail
+SCRIPTNAME=/etc/init.d/$NAME
+SCRIPTURI=/home/pi/bin/$NAME
+LOGFILE=/home/pi/bin/$NAME.$DNAME.log
+LOGFILEERR=/home/pi/bin/$NAME.ERR.$DNAME.log
+#LOGFILE=/dev/null
+
+start() {
+  if [ "$(pidof $NAME)" ]; then
+    #echo 'Service already running' >&2
+    echo 'Service already running'
+    return 1
+  else
+    #echo 'Starting service...' >&2
+    echo 'Starting service ...'
+  fi
+  echo "$(date) $0 $1 start" >> /home/pi/bin/initdX.log
+  who am i >> /home/pi/bin/initdX.log
+  echo "\n" >> /home/pi/bin/initdX.log
+  local CMD="$SCRIPTURI"
+  $CMD 1>>$LOGFILE 2>>$LOGFILEERR  &
+#  local CMD="$SCRIPTURI &> \"$LOGFILE\" & echo \$!"
+  #echo 'Service started' >&2
+  echo 'Service started'
+  pidof $NAME
+  pidof $NAME > /home/pi/bin/cocktail_pid
+}
+
+stop() {
+  echo "$(date) $0 $1 stop" >> /home/pi/bin/initdX.log
+  who am i >> /home/pi/bin/initdX.log
+  echo "\n" >> /home/pi/bin/initdX.log
+  if [ "$(pidof $NAME)" ]; then
+    #echo 'Stopping service...' >&2
+    echo 'Stopping service ...'
+  else
+    #echo 'Service not running' >&2
+    echo 'Service not running!'
+    return 1
+  fi
+  kill -9 $(pidof cocktail)
+  #echo 'Service stopped' >&2
+  echo 'Service stopped'
+}
+
+reload() {
+  #sh /usr/local/bin/query_ip.sh > /home/pi/bin/drucker.txt
+}
+
+##echo "$(date) $0 $1" >> /home/pi/bin/initdX.log
+##who am i >> /home/pi/bin/initdX.log
+##echo "\n" >> /home/pi/bin/initdX.log
+
+case "$1" in
+start)   start
+         ;;
+stop)    stop
+         ;;
+restart) reload
+         stop
+         sleep 1
+         start
+         ;;
+reload)  reload
+         stop
+         sleep 1
+         start
+         ;;
+*)       echo "Usage: $0 {start|stop|restart|reload}"
+         exit 2
+         ;;
+esac
+exit 0
