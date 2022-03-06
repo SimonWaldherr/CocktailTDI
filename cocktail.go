@@ -287,8 +287,7 @@ func main() {
 		gwv.URL("^/ozapftis/?.*$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
 			wunschCocktail := strings.Replace(req.RequestURI, "/ozapftis/", "", 1)
 			pumpe := rpio.Pin(pins[16])
-			//pumpe.Output()
-			//time.Sleep(time.Second * 2)
+
 			for _, cocktail := range rezepte {
 				if strings.Replace(cocktail.Name, " ", "", -1) == wunschCocktail {
 					fmt.Printf("Cocktail: %#v\n", cocktail.Name)
@@ -300,12 +299,6 @@ func main() {
 						fmt.Println("pumpe an")
 						entluft.Input()
 						fmt.Println("entlüft aus")
-
-						//fmt.Println(req.RequestURI)
-
-						//testStr := strings.Replace(req.RequestURI, "/test/", "", 1)
-						//testArr := strings.Split(testStr, "/")
-						//testPin := rpio.Pin(pins[int(as.Int(testArr[0]))])
 
 						fmt.Println("starting go func")
 
@@ -333,8 +326,6 @@ func main() {
 					fmt.Printf("  Kommentar: %#v\n\n", cocktail.Kommentar)
 				}
 			}
-			//time.Sleep(time.Second * 2)
-			//pumpe.Input()
 			fmt.Printf("Ende.\n\n")
 			return "/", http.StatusFound
 		}, gwv.HTML),
