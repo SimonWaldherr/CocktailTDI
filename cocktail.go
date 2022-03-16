@@ -5,6 +5,7 @@ import (
 	"fmt"
 	waage "github.com/MichaelS11/go-hx711"
 	"github.com/stianeikeland/go-rpio"
+	"math/rand"
 	"net/http"
 	"path/filepath"
 	"runtime"
@@ -25,8 +26,8 @@ type Rezepte []struct {
 		Menge int    `json:"Menge"`
 	} `json:"Zutaten"`
 	Kommentar string `json:"Kommentar"`
-	Vorher string `json:"Vorher"`
-	Nachher string `json:"Nachher"`
+	Vorher    string `json:"Vorher"`
+	Nachher   string `json:"Nachher"`
 }
 
 var pins map[int]int
@@ -57,7 +58,7 @@ func init() {
 	if err != nil {
 		panic(fmt.Sprint("unable to open gpio", err.Error()))
 	}
-	
+
 	str, _ := file.Read("./zutaten.json")
 	err = json.Unmarshal([]byte(str), &zutaten)
 
@@ -171,6 +172,8 @@ func main() {
 
 	pinCola := rpio.Pin(17)
 
+	rand.Seed(time.Now().Unix())
+
 	HTTPD.URLhandler(
 		gwv.URL("^/toggle/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
 			for i := 1; i < 17; i++ {
@@ -255,44 +258,61 @@ func main() {
 			wunschCocktail := strings.Replace(req.RequestURI, "/ozapftis/", "", 1)
 			pumpe := rpio.Pin(pins[16])
 
-			for _, cocktail := range rezepte {
-				if strings.Replace(cocktail.Name, " ", "", -1) == wunschCocktail {
-					fmt.Printf("Cocktail: %#v\n", cocktail.Name)
-					fmt.Printf("  Zutaten:\n")
-					for _, zut := range cocktail.Zutaten {
-						fmt.Printf("    %v: %v\n", zut.Name, zut.Menge)
-						zutatPin := rpio.Pin(pins[zutaten[zut.Name]])
-						pumpe.Output()
-						fmt.Println("pumpe an")
-						entluft.Input()
-						fmt.Println("entlüft aus")
+			var rezept struct {
+				Name    string "json:\"Name\""
+				Zutaten []struct {
+					Name  string "json:\"Name\""
+					Menge int    "json:\"Menge\""
+				} "json:\"Zutaten\""
+				Kommentar string "json:\"Kommentar\""
+				Vorher    string "json:\"Vorher\""
+				Nachher   string "json:\"Nachher\""
+			}
 
-						fmt.Println("starting go func")
-
-						go func() {
-							time.Sleep(2 * time.Second)
-							zutatPin.Output()
-							fmt.Println("pumpe an")
-							master.Output()
-							entluft.Input()
-						}()
-
-						fmt.Println("starting scale")
-
-						scaleDelay(int(as.Int(zut.Menge)), 4*time.Minute)
-
-						fmt.Println("scale delay ready")
-
-						master.Input()
-						entluft.Output()
-						time.Sleep(time.Second * 5)
-						zutatPin.Input()
-						fmt.Println("stop pump")
-						pumpe.Input()
+			if wunschCocktail == "random" {
+				rezept = rezepte[rand.Intn(len(rezepte))]
+			} else {
+				for _, cocktail := range rezepte {
+					if strings.Replace(cocktail.Name, " ", "", -1) == wunschCocktail {
+						rezept = cocktail
 					}
-					fmt.Printf("  Kommentar: %#v\n\n", cocktail.Kommentar)
 				}
 			}
+			fmt.Printf("Cocktail: %#v\n", rezept.Name)
+			fmt.Printf("  Zutaten:\n")
+			for _, zut := range rezept.Zutaten {
+				fmt.Printf("    %v: %v\n", zut.Name, zut.Menge)
+				zutatPin := rpio.Pin(pins[zutaten[zut.Name]])
+				pumpe.Output()
+				fmt.Println("pumpe an")
+				entluft.Input()
+				fmt.Println("entlüft aus")
+
+				fmt.Println("starting go func")
+
+				go func() {
+					time.Sleep(2 * time.Second)
+					zutatPin.Output()
+					fmt.Println("pumpe an")
+					master.Output()
+					entluft.Input()
+				}()
+
+				fmt.Println("starting scale")
+
+				scaleDelay(int(as.Int(zut.Menge)), 2*time.Minute)
+
+				fmt.Println("scale delay ready")
+
+				master.Input()
+				entluft.Output()
+				time.Sleep(time.Second * 5)
+				zutatPin.Input()
+				fmt.Println("stop pump")
+				pumpe.Input()
+			}
+			fmt.Printf("  Kommentar: %#v\n\n", rezept.Kommentar)
+
 			fmt.Printf("Ende.\n\n")
 			return "/", http.StatusFound
 		}, gwv.HTML),

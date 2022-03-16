@@ -1,5 +1,6 @@
 
 import HomePage from '../pages/home.f7';
+import Random from '../pages/Random.f7';
 //import NotFoundPage from '../pages/404.f7';
 import OldFashioned from '../pages/OldFashioned.f7';
 import Manhattan from '../pages/Manhattan.f7';
@@ -19,7 +20,7 @@ import Zitronensaft from '../pages/Zitronensaft.f7';
 import Rum from '../pages/Rum.f7';
 import Cola from '../pages/Cola.f7';
 import Vodka from '../pages/Vodka.f7';
-var routes = [{path: '/',component: HomePage,},{path: '/OldFashioned/',component: OldFashioned,},{path: '/Manhattan/',component: Manhattan,},{path: '/Collins/',component: Collins,},{path: '/WhiskySour/',component: WhiskySour,},{path: '/Tschunk/',component: Tschunk,},{path: '/Mojito/',component: Mojito,},{path: '/PinaColada/',component: PinaColada,},{path: '/CubaLibre/',component: CubaLibre,},{path: '/Daiquiri/',component: Daiquiri,},{path: '/WhiskyCola/',component: WhiskyCola,},{path: '/VodkaLemon/',component: VodkaLemon,},{path: '/VodkaBull/',component: VodkaBull,},{path: '/Whisky/',component: Whisky,},{path: '/Zuckersirup/',component: Zuckersirup,},{path: '/Zitronensaft/',component: Zitronensaft,},{path: '/Rum/',component: Rum,},{path: '/Cola/',component: Cola,},{path: '/Vodka/',component: Vodka,},//{path: '(.*)',component: NotFoundPage,},
+var routes = [{path: '/',component: HomePage,},{path: '/Random/',component: Random,},{path: '/OldFashioned/',component: OldFashioned,},{path: '/Manhattan/',component: Manhattan,},{path: '/Collins/',component: Collins,},{path: '/WhiskySour/',component: WhiskySour,},{path: '/Tschunk/',component: Tschunk,},{path: '/Mojito/',component: Mojito,},{path: '/PinaColada/',component: PinaColada,},{path: '/CubaLibre/',component: CubaLibre,},{path: '/Daiquiri/',component: Daiquiri,},{path: '/WhiskyCola/',component: WhiskyCola,},{path: '/VodkaLemon/',component: VodkaLemon,},{path: '/VodkaBull/',component: VodkaBull,},{path: '/Whisky/',component: Whisky,},{path: '/Zuckersirup/',component: Zuckersirup,},{path: '/Zitronensaft/',component: Zitronensaft,},{path: '/Rum/',component: Rum,},{path: '/Cola/',component: Cola,},{path: '/Vodka/',component: Vodka,},//{path: '(.*)',component: NotFoundPage,},
 ];
 
 export default routes;

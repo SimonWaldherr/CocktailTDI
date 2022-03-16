@@ -34,6 +34,18 @@ $homePage1 = <<<EOD
     </div>
     <!-- Scrollable page content-->
     <div class="page-content">
+      <div class="block-title">Zufall</div>
+            <div class="list">
+              <ul>
+                <li>
+                  <a href="/Random/" class="item-content item-link">
+                    <div class="item-inner">
+                      <div class="item-title">Zufall</div>
+                    </div>
+                  </a>
+                </li>
+              </ul>
+            </div>
       <div class="block-title">Cocktails</div>
       <div class="list">
         <ul>
@@ -66,12 +78,13 @@ EOD;
 $routes1 = <<<EOD
 
 import HomePage from '../pages/home.f7';
+import Random from '../pages/Random.f7';
 //import NotFoundPage from '../pages/404.f7';
 
 EOD;
 
 $routes2 = <<<EOD
-var routes = [{path: '/',component: HomePage,},
+var routes = [{path: '/',component: HomePage,},{path: '/Random/',component: Random,},
 EOD;
 
 $routes3 = <<<EOD
@@ -259,6 +272,52 @@ EOD;
 EOD;
     file_put_contents($pagesPath.$ingredient.'.f7', $html);
 }
+
+$html = <<<EOD
+    <template>
+      <div class="page">
+      <div class="navbar">
+        <div class="navbar-bg"></div>
+        <div class="navbar-inner sliding">
+          <div class="left">
+            <a href="#" class="link back">
+              <i class="icon icon-back"></i>
+              <span class="if-not-md">Back</span>
+            </a>
+          </div>
+          <div class="title">Zufall</div>
+        </div>
+      </div>
+        <div class="page-content">
+          <div class="block-title">Beschreibung</div>
+          <div class="block block-strong">
+            <p>mal schauen was da kommt</p>
+          </div>
+          <div class="block block-strong"><button class="button button-fill" id="mixit">Zufall</button></div>
+        </div>
+      </div>
+    </template>
+    <script>
+      export default (props, { $, \$f7, \$on }) => {
+        \$on('pageInit', () => {
+          $('#mixit').on('click', function() {
+            \$f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
+              \$f7.dialog.preloader('Irgendwas wird eingefüllt ...');
+              \$f7.request.get('/ozapftis/random').then((res) => {
+                setTimeout(function () {
+                  \$f7.dialog.close();
+                }, 1000);
+              });
+            });
+          })
+        })
+
+        return \$render;
+      }
+    </script>
+EOD;
+
+file_put_contents($pagesPath.'Random.f7', $html);
 
 file_put_contents($pagesPath.'../js/routes.js', $routes1.$routes2.$routes3);
 file_put_contents($pagesPath.'home.f7', $homePage1.$homePage2.$homePage3);

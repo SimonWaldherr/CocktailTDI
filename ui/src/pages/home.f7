@@ -10,6 +10,18 @@
     </div>
     <!-- Scrollable page content-->
     <div class="page-content">
+      <div class="block-title">Zufall</div>
+            <div class="list">
+              <ul>
+                <li>
+                  <a href="/Random/" class="item-content item-link">
+                    <div class="item-inner">
+                      <div class="item-title">Zufall</div>
+                    </div>
+                  </a>
+                </li>
+              </ul>
+            </div>
       <div class="block-title">Cocktails</div>
       <div class="list">
         <ul>
