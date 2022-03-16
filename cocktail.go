@@ -25,18 +25,13 @@ type Rezepte []struct {
 		Menge int    `json:"Menge"`
 	} `json:"Zutaten"`
 	Kommentar string `json:"Kommentar"`
+	Vorher string `json:"Vorher"`
+	Nachher string `json:"Nachher"`
 }
-
-type MultiStruct []int
 
 var pins map[int]int
 var zutaten map[string]int
-
-var multiplikator []int
 var rezepte Rezepte
-
-const aufladedauer = 640
-const zeitmultiplikator = 120
 
 func init() {
 	pins = map[int]int{
@@ -58,25 +53,18 @@ func init() {
 		16: 20,
 	}
 
-	zutaten = map[string]int{
-		"Rum":   2,
-		"Fanta": 3,
-		"Cola":  4,
-		"Tonic": 5,
-		"Gin":   6,
-		"Mate":  7,
-	}
-
 	err := rpio.Open()
 	if err != nil {
 		panic(fmt.Sprint("unable to open gpio", err.Error()))
 	}
-
-	str, _ := file.Read("./multiplikator.json")
-	err = json.Unmarshal([]byte(str), &multiplikator)
+	
+	str, _ := file.Read("./zutaten.json")
+	err = json.Unmarshal([]byte(str), &zutaten)
 
 	if err != nil {
 		fmt.Println(err)
+	} else {
+		fmt.Printf("Zutaten geladen:\n")
 	}
 
 	str, _ = file.Read("./rezepte.json")
@@ -108,7 +96,6 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 	}
 
 	hx711.AdjustZero = 128663
-	//hx711.AdjustZero = 128000
 	hx711.AdjustScale = 385.000000
 
 	c1 := make(chan bool, 1)
@@ -124,7 +111,6 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 				fmt.Println("ReadDataRaw error:", err)
 				continue
 			}
-			//data = data * -1
 
 			tara = append(tara, data)
 		}
@@ -140,8 +126,6 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 				fmt.Println("ReadDataRaw error:", err)
 				continue
 			}
-
-			//data2 = data2 * -1
 
 			data = float64(data2-hx711.AdjustZero) / hx711.AdjustScale
 			fmt.Println(xmath.Round(data - taraAvg))
@@ -163,7 +147,6 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 }
 
 func main() {
-	//dir := gopath.Dir()
 	dir := gopath.WD()
 	fmt.Println("DIR 1:", gopath.WD())
 	fmt.Println("DIR 2:", dir)
@@ -226,38 +209,22 @@ func main() {
 
 			for _, cocktail := range rezepte {
 				ctname := strings.Replace(cocktail.Name, " ", "", -1)
-				//if ctname == wunschCocktail {
 				ret += fmt.Sprintf("<a href=\"../ozapftis/%v\">%v</a>\n", ctname, cocktail.Name)
 				ret += fmt.Sprintf("<p>%v</p>\n\n", cocktail.Kommentar)
-				//}
 			}
 			return ret, http.StatusOK
 		}, gwv.HTML),
 		gwv.URL("^/test/\\d*/\\d*$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
-			str, _ := file.Read("./multiplikator.json")
-			err := json.Unmarshal([]byte(str), &multiplikator)
-
-			if err != nil {
-				fmt.Println(err)
-			}
-
 			pumpe.Output()
 			fmt.Println("pumpe an")
 			entluft.Input()
 			fmt.Println("entlüft aus")
-			//time.Sleep(time.Second * 1)
 
 			fmt.Println(req.RequestURI)
 
 			testStr := strings.Replace(req.RequestURI, "/test/", "", 1)
 			testArr := strings.Split(testStr, "/")
 			testPin := rpio.Pin(pins[int(as.Int(testArr[0]))])
-			//vorlaufdauer := time.Millisecond * aufladedauer
-			//ansteuerdauer := time.Millisecond * time.Duration(int(as.Int(testArr[1]))*int(as.Int(multiplikator[int(as.Int(testArr[0]))])))
-			//fmt.Printf("vorlaufdauer: %v\tansteuerdauer: %v\n", vorlaufdauer, ansteuerdauer)
-
-			//time.Sleep(vorlaufdauer)
-			//time.Sleep(ansteuerdauer)
 
 			fmt.Println("starting go func")
 

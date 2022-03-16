@@ -1,0 +1,50 @@
+<template>
+  <div class="page">
+  <div class="navbar">
+    <div class="navbar-bg"></div>
+    <div class="navbar-inner sliding">
+      <div class="left">
+        <a href="#" class="link back">
+          <i class="icon icon-back"></i>
+          <span class="if-not-md">Back</span>
+        </a>
+      </div>
+      <div class="title">Pina Colada</div>
+    </div>
+  </div>
+    <div class="page-content">
+      <div class="block-title">Beschreibung</div>
+      <div class="block block-strong">
+        <p>Die Piña Colada (von span. piña ‚Ananas‘ und colar ‚durchsieben‘) ist ein süßer, cremiger Cocktail aus Rum, Cream of Coconut und Ananassaft</p>
+      </div>
+      <div class="block block-strong"><button class="button button-fill" id="mixit">mix it</button></div>
+    </div>
+  </div>
+</template>
+<script>
+  export default (props, { $, $f7, $on }) => {
+    $on('pageInit', () => {
+      $('#mixit').on('click', function() {
+        if('Glas zur Hälfte mit Ananassaft füllen.' !== ''){$f7.dialog.alert('Glas zur Hälfte mit Ananassaft füllen.');}
+        $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
+          //$f7.dialog.alert('Great!');
+          $f7.dialog.preloader('Pina Colada wird zubereitet ...');
+          $f7.request.get('/ozapftis/PinaColada').then((res) => {
+            setTimeout(function () {
+              $f7.dialog.close();
+              if('Mit Crushed Ice und Kokosnussaft/-cream auffüllen (ca. 1/4). Umrühren, Mixen oder Shaken.' !== ''){$f7.dialog.alert('Mit Crushed Ice und Kokosnussaft/-cream auffüllen (ca. 1/4). Umrühren, Mixen oder Shaken.');}
+            }, 1000);
+          });
+          /*
+          setTimeout(function () {
+            $f7.dialog.close();
+            if('Mit Crushed Ice und Kokosnussaft/-cream auffüllen (ca. 1/4). Umrühren, Mixen oder Shaken.' !== ''){$f7.dialog.alert('Mit Crushed Ice und Kokosnussaft/-cream auffüllen (ca. 1/4). Umrühren, Mixen oder Shaken.');}
+          }, 3000);
+          */
+        });
+      })
+    })
+
+    return $render;
+  }
+</script>

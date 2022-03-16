@@ -1,66 +1,264 @@
 [
-  {
-    "Name": "Cola",
-    "Zutaten": [
-      {
-        "Name": "Cola",
-        "Menge": 160
-      }
-    ],
-    "Kommentar": "100% Cola."
-  },
-  {
-    "Name": "Spezi",
-    "Zutaten": [
-      {
-        "Name": "Cola",
-        "Menge": 80
-      },
-      {
-        "Name": "Fanta",
-        "Menge": 80
-      }
-    ],
-    "Kommentar": "Cola und Fanta halb/halb."
-  },
-  {
-    "Name": "Fanta",
-    "Zutaten": [
-      {
-        "Name": "Fanta",
-        "Menge": 160
-      }
-    ],
-    "Kommentar": "100% Fanta."
-  },
-  {
-    "Name": "Gin Tonic",
-    "Zutaten": [
-      {
-        "Name": "Gin",
-        "Menge": 35
-      },
-      {
-        "Name": "Tonic",
-        "Menge": 110
-      }
-    ],
-    "Kommentar": "zuerst füllt man das Glas komplett mit großen Eiswürfeln, 4 – 6cl Gin drübergießen („pouren“), Glas mit vorgekühltem Tonic Water auffüllen, garnieren und servieren"
-  },
-  {
-    "Name": "Tschunk",
-    "Zutaten": [
-      {
+    {
+        "Name": "Old Fashioned",
+        "Zutaten": [
+            {
+                "Name": "Whisky",
+                "Menge": 80
+            },
+            {
+                "Name": "Zuckersirup",
+                "Menge": 13
+            }
+        ],
+        "Kommentar": "Ein Old Fashioned (von englisch old-fashioned f\u00fcr altmodisch, althergebracht) ist einer der wichtigsten klassischen Cocktails. Im 19. Jahrhundert zun\u00e4chst als Whiskey Cocktail, sp\u00e4ter Old Fashioned Whiskey Cocktail, bezeichnet, entspricht der Shortdrink noch heute weitgehend der Urform eines \u201eCocktails\u201c in seiner urspr\u00fcnglichen Definition.",
+        "Vorher": "Etwas Zucker und Cocktailbitter in ein Glas geben. 2-3 Eisw\u00fcrfel in das Glas hinzuf\u00fcgen.",
+        "Nachher": "Je nach Wunsch Orangen- oder Zitronenscheiben zugeben.",
+        "Wiki": "https:\/\/de.wikipedia.org\/wiki\/Old_Fashioned"
+    },
+    {
+        "Name": "Manhattan",
+        "Zutaten": [
+            {
+                "Name": "Whisky",
+                "Menge": 67
+            }
+        ],
+        "Kommentar": "Der klassische Manhattan Cocktail wird aus Whisky sowie rotem Wermut gemixt und als Aperitif getrunken. Nur echt mit der Kirsche!",
+        "Vorher": "1-2 Tropfen Cocktailbitter in das Glas geben",
+        "Nachher": "Ungef\u00e4hr halb so viel Wermut in das Glas geben wie Whisky im Glas ist. Mit Kirsch verzieren.",
+        "Wiki": "https:\/\/de.wikipedia.org\/wiki\/Manhattan_(Cocktail)"
+    },
+    {
+        "Name": "Collins",
+        "Zutaten": [
+            {
+                "Name": "Whisky",
+                "Menge": 40
+            },
+            {
+                "Name": "Zuckersirup",
+                "Menge": 20
+            },
+            {
+                "Name": "Zitronensaft",
+                "Menge": 10
+            }
+        ],
+        "Kommentar": "\"Ein Collins ist ein alkoholhaltiger Cocktail, der auf dem klassischen Sour (Spirituose, Zitronensaft, Zuckersirup) aufbaut, aber wie ein Fizz zus\u00e4tzlich Sodawasser enth\u00e4lt. Je nach Spirituose gibt es unterschiedliche Bezeichnungen: Cognac\/Weinbrand: Pierre Collins, Brandy Collins; Gin: Tom Collins; Irish Whiskey: Mike Collins; wei\u00dfer Rum: Ron Collins (span. Rum = Ron), Pedro Collins; brauner Rum: Rum Collins; Scotch Whisky: Sandy Collins; Tequila: Ruben Collins; Wodka: Joe Collins, Wodka Collins\"",
+        "Vorher": "",
+        "Nachher": "Mit Soda auff\u00fcllen, ca. 20%.",
+        "Wiki": "https:\/\/de.wikipedia.org\/wiki\/Collins_(Cocktail)"
+    },
+    {
+        "Name": "Whisky Sour",
+        "Zutaten": [
+            {
+                "Name": "Whisky",
+                "Menge": 63
+            },
+            {
+                "Name": "Zuckersirup",
+                "Menge": 25
+            },
+            {
+                "Name": "Zitronensaft",
+                "Menge": 13
+            }
+        ],
+        "Kommentar": "Whiskey Sour (auch Whisky Sour) ist ein Cocktail \u2013 ein sogenannter Sour. Das alkoholische Mixgetr\u00e4nk besteht aus nur drei Hauptzutaten: Whiskey, frischer Zitronensaft und irgendeine Form von Zucker.",
+        "Vorher": "",
+        "Nachher": "Im Glas mit 1\/2 Zitronenscheibe + 1\/2 Orangenscheibe und einer Cocktailkirsche garnieren. F\u00fcgt man dem Mix einen Spritzer Orangensaft hinzu, hei\u00dft er dann California.",
+        "Wiki": "https:\/\/de.wikipedia.org\/wiki\/Whiskey_Sour"
+    },
+    {
+        "Name": "Tschunk",
+        "Zutaten": [
+            {
+                "Name": "Rum",
+                "Menge": 21
+            }
+        ],
+        "Kommentar": "Der Tschunk ist ein Cocktail aus Rum, Rohrzucker, Limetten und Club-Mate. Er ist \u00fcberwiegend in der Hackerszene verbreitet (u. a. bei Mitgliedern des CCC).",
+        "Vorher": "4\/8 Limette und Rohrzucker ins Glas geben und stampfen, 4 Eisw\u00fcrfel hinzugeben.",
+        "Nachher": "Glas mit Club Mate auff\u00fcllen.",
+        "Wiki": "https:\/\/de.wikipedia.org\/wiki\/Club-Mate#Mate-Mixgetr\u00e4nke"
+    },
+    {
+        "Name": "Mojito",
+        "Zutaten": [
+            {
+                "Name": "Zuckersirup",
+                "Menge": 13
+            },
+            {
+                "Name": "Rum",
+                "Menge": 32
+            }
+        ],
+        "Kommentar": "Der Mojito ist ein Cocktail aus hellem kubanischen Rum, Limettensaft, Minze, Rohrzucker und Sodawasser. Er geh\u00f6rt zu den bekanntesten Mixgetr\u00e4nken.",
+        "Vorher": "Minzblatt, 1\/3 Soda und 1\/6 Limettensaft ins Glas geben.",
+        "Nachher": "Umr\u00fchren.",
+        "Wiki": "https:\/\/de.wikipedia.org\/wiki\/Mojito"
+    },
+    {
+        "Name": "Pina Colada",
+        "Zutaten": [
+            {
+                "Name": "Rum",
+                "Menge": 22
+            }
+        ],
+        "Kommentar": "Die Pi\u00f1a Colada (von span. pi\u00f1a \u201aAnanas\u2018 und colar \u201adurchsieben\u2018) ist ein s\u00fc\u00dfer, cremiger Cocktail aus Rum, Cream of Coconut und Ananassaft",
+        "Vorher": "Glas zur H\u00e4lfte mit Ananassaft f\u00fcllen.",
+        "Nachher": "Mit Crushed Ice und Kokosnussaft\/-cream auff\u00fcllen (ca. 1\/4). Umr\u00fchren, Mixen oder Shaken.",
+        "Wiki": "https:\/\/de.wikipedia.org\/wiki\/Pi\u00f1a_Colada"
+    },
+    {
+        "Name": "Cuba Libre",
+        "Zutaten": [
+            {
+                "Name": "Rum",
+                "Menge": 25
+            },
+            {
+                "Name": "Cola",
+                "Menge": 75
+            }
+        ],
+        "Kommentar": "Cuba Libre (spanisch f\u00fcr \u201eFreies Kuba\u201c) ist ein Longdrink mit Rum und Cola und oftmals Limetten, der um 1900 in Kuba entstand.",
+        "Vorher": "",
+        "Nachher": "Je nach Wunsch ein paar Spritzer Limettensaft zugeben.",
+        "Wiki": "https:\/\/de.wikipedia.org\/wiki\/Cuba_Libre"
+    },
+    {
+        "Name": "Daiquiri",
+        "Zutaten": [
+            {
+                "Name": "Zuckersirup",
+                "Menge": 20
+            },
+            {
+                "Name": "Zitronensaft",
+                "Menge": 30
+            },
+            {
+                "Name": "Rum",
+                "Menge": 50
+            }
+        ],
+        "Kommentar": "Der Daiquiri ist ein klassischer Cocktail auf Basis von wei\u00dfem Rum. Der Shortdrink geh\u00f6rt zur gro\u00dfen Gruppe der Sours und wurde nach der kubanischen Siedlung Daiquir\u00ed benannt.",
+        "Vorher": "",
+        "Nachher": "Mit Eisw\u00fcrfel oder Crushed Ice (Frozen Daiquiri) auff\u00fcllen. Nach Wunsch mixen. Nach Wunsch mit Limettenschlitz verziehren.",
+        "Wiki": "https:\/\/de.wikipedia.org\/wiki\/Daiquiri"
+    },
+    {
+        "Name": "Whisky Cola",
+        "Zutaten": [
+            {
+                "Name": "Whisky",
+                "Menge": 25
+            },
+            {
+                "Name": "Cola",
+                "Menge": 75
+            }
+        ],
+        "Kommentar": "Whiskey Cola ist ein klassischer Highball und Longdrink, der aus Whisky, Cola und Eis besteht.",
+        "Vorher": "",
+        "Nachher": "Eisw\u00fcrfel zugeben.",
+        "Wiki": "https:\/\/de.wikipedia.org\/wiki\/Whiskey_Cola"
+    },
+    {
+        "Name": "Vodka Lemon",
+        "Zutaten": [
+            {
+                "Name": "Vodka",
+                "Menge": 24
+            }
+        ],
+        "Kommentar": "Der Wodka Lemon, auch oft unter Vodka Lemon bekannt, ist ein absoluter Klassiker unter den Longdrinks. Der leicht bittere Geschmack des Bitter Lemons mischt sich herrlich mit dem Wodka und ergibt ein wunderbar erfrischendes Getr\u00e4nk.",
+        "Vorher": "",
+        "Nachher": "Mit Eisw\u00fcrfel oder Crushed Ice und Tonic-Wasser (Wodka Tonic) oder Bitter Lemon (Wodka Lemon) auff\u00fcllen. Nach Wunsch mixen. Nach Wunsch mit Limetten- oder Orangenschlitz verziehren.",
+        "Wiki": "https:\/\/en.wikipedia.org\/wiki\/Vodka_tonic"
+    },
+    {
+        "Name": "Vodka Bull",
+        "Zutaten": [
+            {
+                "Name": "Vodka",
+                "Menge": 20
+            }
+        ],
+        "Kommentar": "Wodka Energy (auch Fl\u00fcgerl, Wodka-E, Ferrari oder Voddy Bull) ist ein Longdrink aus Wodka und einem Energydrink, der klassischerweise in einem Highball- oder Longdrinkglas mit oder ohne Eisw\u00fcrfel serviert wird. Aufgrund der h\u00e4ufigen Verwendung des Energydrinks der Marke Red Bull wird das Getr\u00e4nk auch Wodka Red-Bull, Wodka Bull oder Fl\u00fcgerl (wegen des Werbeslogans Red Bull verleiht Fl\u00fcgel) genannt.",
+        "Vorher": "",
+        "Nachher": "Mit Red Bull (oder anderen Energy Drinks) auff\u00fcllen. Nach Wunsch mit Johnnesbeersaft verfeinern - dann wird ein schwarzes Fl\u00fcgerl daraus. Alternativ etwas Cola und Limettensaft zugeben - dann wird ein Mexican on Ice daraus.",
+        "Wiki": "https:\/\/de.wikipedia.org\/wiki\/Wodka_Energy"
+    },
+    {
+        "Name": "Whisky",
+        "Zutaten": {
+            "Name": "Whisky",
+            "Menge": 20
+        },
+        "Kommentar": "",
+        "Pre": "",
+        "Post": "",
+        "Wiki": ""
+    },
+    {
+        "Name": "Zuckersirup",
+        "Zutaten": {
+            "Name": "Zuckersirup",
+            "Menge": 20
+        },
+        "Kommentar": "",
+        "Pre": "",
+        "Post": "",
+        "Wiki": ""
+    },
+    {
+        "Name": "Zitronensaft",
+        "Zutaten": {
+            "Name": "Zitronensaft",
+            "Menge": 20
+        },
+        "Kommentar": "",
+        "Pre": "",
+        "Post": "",
+        "Wiki": ""
+    },
+    {
         "Name": "Rum",
-        "Menge": 9
-      },
-      {
-        "Name": "Mate",
-        "Menge": 45
-      }
-    ],
-    "Kommentar": "Limettenwürfel einfügen, braunen Zucker hinzufügen, Limetten zerdrücken, crushed Ice hinzufügen, in die Maschine stellen."
-  }
+        "Zutaten": {
+            "Name": "Rum",
+            "Menge": 20
+        },
+        "Kommentar": "",
+        "Pre": "",
+        "Post": "",
+        "Wiki": ""
+    },
+    {
+        "Name": "Cola",
+        "Zutaten": {
+            "Name": "Cola",
+            "Menge": 20
+        },
+        "Kommentar": "",
+        "Pre": "",
+        "Post": "",
+        "Wiki": ""
+    },
+    {
+        "Name": "Vodka",
+        "Zutaten": {
+            "Name": "Vodka",
+            "Menge": 20
+        },
+        "Kommentar": "",
+        "Pre": "",
+        "Post": "",
+        "Wiki": ""
+    }
 ]
-        
-        

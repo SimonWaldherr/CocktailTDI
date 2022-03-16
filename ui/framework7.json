@@ -1,0 +1,19 @@
+{
+  "cwd": "/Users/simonwaldherr/git/CocktailTDI_Beta/ui4",
+  "type": [
+    "web"
+  ],
+  "name": "cocktail tdi",
+  "framework": "core",
+  "template": "single-view",
+  "bundler": "vite",
+  "cssPreProcessor": false,
+  "theming": {
+    "customColor": true,
+    "color": "#006add",
+    "darkTheme": true,
+    "iconFonts": true,
+    "fillBars": true
+  },
+  "customBuild": false
+}

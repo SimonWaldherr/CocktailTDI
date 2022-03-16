@@ -1,0 +1,54 @@
+    <template>
+      <div class="page">
+      <div class="navbar">
+        <div class="navbar-bg"></div>
+        <div class="navbar-inner sliding">
+          <div class="left">
+            <a href="#" class="link back">
+              <i class="icon icon-back"></i>
+              <span class="if-not-md">Back</span>
+            </a>
+          </div>
+          <div class="title">Cola</div>
+        </div>
+      </div>
+        <div class="page-content">
+          <div class="block-title">Beschreibung</div>
+          <div class="block block-strong">
+            <p>Einfach nur Cola - pur!</p>
+          </div>
+          <div class="block block-strong"><button class="button button-fill" id="mixit">o'zapft is</button></div>
+        </div>
+      </div>
+    </template>
+    <script>
+      export default (props, { $, $f7, $on }) => {
+        /*
+        $on('pageInit', () => {
+          $('#mixit').on('click', function() {
+            $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
+              //$f7.dialog.alert('Great!');
+              $f7.dialog.preloader('Cola wird eingefüllt ...');
+              setTimeout(function () {
+                $f7.dialog.close();
+              }, 3000);
+            });
+          })
+        })
+        */
+        $on('pageInit', () => {
+          $('#mixit').on('click', function() {
+            $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
+              $f7.dialog.preloader('Cola wird eingefüllt ...');
+              $f7.request.get('/ozapftis/Cola').then((res) => {
+                setTimeout(function () {
+                  $f7.dialog.close();
+                }, 1000);
+              });
+            });
+          })
+        })
+    
+        return $render;
+      }
+    </script>

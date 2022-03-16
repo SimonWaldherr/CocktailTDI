@@ -1,0 +1,50 @@
+<template>
+  <div class="page">
+  <div class="navbar">
+    <div class="navbar-bg"></div>
+    <div class="navbar-inner sliding">
+      <div class="left">
+        <a href="#" class="link back">
+          <i class="icon icon-back"></i>
+          <span class="if-not-md">Back</span>
+        </a>
+      </div>
+      <div class="title">Old Fashioned</div>
+    </div>
+  </div>
+    <div class="page-content">
+      <div class="block-title">Beschreibung</div>
+      <div class="block block-strong">
+        <p>Ein Old Fashioned (von englisch old-fashioned für altmodisch, althergebracht) ist einer der wichtigsten klassischen Cocktails. Im 19. Jahrhundert zunächst als Whiskey Cocktail, später Old Fashioned Whiskey Cocktail, bezeichnet, entspricht der Shortdrink noch heute weitgehend der Urform eines „Cocktails“ in seiner ursprünglichen Definition.</p>
+      </div>
+      <div class="block block-strong"><button class="button button-fill" id="mixit">mix it</button></div>
+    </div>
+  </div>
+</template>
+<script>
+  export default (props, { $, $f7, $on }) => {
+    $on('pageInit', () => {
+      $('#mixit').on('click', function() {
+        if('Etwas Zucker und Cocktailbitter in ein Glas geben. 2-3 Eiswürfel in das Glas hinzufügen.' !== ''){$f7.dialog.alert('Etwas Zucker und Cocktailbitter in ein Glas geben. 2-3 Eiswürfel in das Glas hinzufügen.');}
+        $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
+          //$f7.dialog.alert('Great!');
+          $f7.dialog.preloader('Old Fashioned wird zubereitet ...');
+          $f7.request.get('/ozapftis/OldFashioned').then((res) => {
+            setTimeout(function () {
+              $f7.dialog.close();
+              if('Je nach Wunsch Orangen- oder Zitronenscheiben zugeben.' !== ''){$f7.dialog.alert('Je nach Wunsch Orangen- oder Zitronenscheiben zugeben.');}
+            }, 1000);
+          });
+          /*
+          setTimeout(function () {
+            $f7.dialog.close();
+            if('Je nach Wunsch Orangen- oder Zitronenscheiben zugeben.' !== ''){$f7.dialog.alert('Je nach Wunsch Orangen- oder Zitronenscheiben zugeben.');}
+          }, 3000);
+          */
+        });
+      })
+    })
+
+    return $render;
+  }
+</script>

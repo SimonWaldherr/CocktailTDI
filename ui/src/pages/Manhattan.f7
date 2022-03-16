@@ -1,0 +1,50 @@
+<template>
+  <div class="page">
+  <div class="navbar">
+    <div class="navbar-bg"></div>
+    <div class="navbar-inner sliding">
+      <div class="left">
+        <a href="#" class="link back">
+          <i class="icon icon-back"></i>
+          <span class="if-not-md">Back</span>
+        </a>
+      </div>
+      <div class="title">Manhattan</div>
+    </div>
+  </div>
+    <div class="page-content">
+      <div class="block-title">Beschreibung</div>
+      <div class="block block-strong">
+        <p>Der klassische Manhattan Cocktail wird aus Whisky sowie rotem Wermut gemixt und als Aperitif getrunken. Nur echt mit der Kirsche!</p>
+      </div>
+      <div class="block block-strong"><button class="button button-fill" id="mixit">mix it</button></div>
+    </div>
+  </div>
+</template>
+<script>
+  export default (props, { $, $f7, $on }) => {
+    $on('pageInit', () => {
+      $('#mixit').on('click', function() {
+        if('1-2 Tropfen Cocktailbitter in das Glas geben' !== ''){$f7.dialog.alert('1-2 Tropfen Cocktailbitter in das Glas geben');}
+        $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
+          //$f7.dialog.alert('Great!');
+          $f7.dialog.preloader('Manhattan wird zubereitet ...');
+          $f7.request.get('/ozapftis/Manhattan').then((res) => {
+            setTimeout(function () {
+              $f7.dialog.close();
+              if('Ungefähr halb so viel Wermut in das Glas geben wie Whisky im Glas ist. Mit Kirsch verzieren.' !== ''){$f7.dialog.alert('Ungefähr halb so viel Wermut in das Glas geben wie Whisky im Glas ist. Mit Kirsch verzieren.');}
+            }, 1000);
+          });
+          /*
+          setTimeout(function () {
+            $f7.dialog.close();
+            if('Ungefähr halb so viel Wermut in das Glas geben wie Whisky im Glas ist. Mit Kirsch verzieren.' !== ''){$f7.dialog.alert('Ungefähr halb so viel Wermut in das Glas geben wie Whisky im Glas ist. Mit Kirsch verzieren.');}
+          }, 3000);
+          */
+        });
+      })
+    })
+
+    return $render;
+  }
+</script>

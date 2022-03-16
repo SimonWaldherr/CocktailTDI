@@ -1,0 +1,157 @@
+<template>
+  <div class="page" data-name="home">
+    <!-- Top Navbar -->
+    <div class="navbar">
+      <div class="navbar-bg"></div>
+      <div class="navbar-inner sliding">
+        <div class="title">cocktail tdi
+        </div>
+      </div>
+    </div>
+    <!-- Scrollable page content-->
+    <div class="page-content">
+      <div class="block-title">Cocktails</div>
+      <div class="list">
+        <ul>
+            <li>
+              <a href="/OldFashioned/" class="item-content item-link">
+                <div class="item-inner">
+                  <div class="item-title">Old Fashioned</div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="/Manhattan/" class="item-content item-link">
+                <div class="item-inner">
+                  <div class="item-title">Manhattan</div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="/Collins/" class="item-content item-link">
+                <div class="item-inner">
+                  <div class="item-title">Collins</div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="/WhiskySour/" class="item-content item-link">
+                <div class="item-inner">
+                  <div class="item-title">Whisky Sour</div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="/Tschunk/" class="item-content item-link">
+                <div class="item-inner">
+                  <div class="item-title">Tschunk</div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="/Mojito/" class="item-content item-link">
+                <div class="item-inner">
+                  <div class="item-title">Mojito</div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="/PinaColada/" class="item-content item-link">
+                <div class="item-inner">
+                  <div class="item-title">Pina Colada</div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="/CubaLibre/" class="item-content item-link">
+                <div class="item-inner">
+                  <div class="item-title">Cuba Libre</div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="/Daiquiri/" class="item-content item-link">
+                <div class="item-inner">
+                  <div class="item-title">Daiquiri</div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="/WhiskyCola/" class="item-content item-link">
+                <div class="item-inner">
+                  <div class="item-title">Whisky Cola</div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="/VodkaLemon/" class="item-content item-link">
+                <div class="item-inner">
+                  <div class="item-title">Vodka Lemon</div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="/VodkaBull/" class="item-content item-link">
+                <div class="item-inner">
+                  <div class="item-title">Vodka Bull</div>
+                </div>
+              </a>
+            </li>
+        </ul>
+      </div>
+      <div class="block-title">Pur</div>
+      <div class="list">
+        <ul>
+                <li>
+                  <a href="/Whisky/" class="item-content item-link">
+                    <div class="item-inner">
+                      <div class="item-title">Whisky</div>
+                    </div>
+                  </a>
+                </li>
+                    <li>
+                  <a href="/Zuckersirup/" class="item-content item-link">
+                    <div class="item-inner">
+                      <div class="item-title">Zuckersirup</div>
+                    </div>
+                  </a>
+                </li>
+                    <li>
+                  <a href="/Zitronensaft/" class="item-content item-link">
+                    <div class="item-inner">
+                      <div class="item-title">Zitronensaft</div>
+                    </div>
+                  </a>
+                </li>
+                    <li>
+                  <a href="/Rum/" class="item-content item-link">
+                    <div class="item-inner">
+                      <div class="item-title">Rum</div>
+                    </div>
+                  </a>
+                </li>
+                    <li>
+                  <a href="/Cola/" class="item-content item-link">
+                    <div class="item-inner">
+                      <div class="item-title">Cola</div>
+                    </div>
+                  </a>
+                </li>
+                    <li>
+                  <a href="/Vodka/" class="item-content item-link">
+                    <div class="item-inner">
+                      <div class="item-title">Vodka</div>
+                    </div>
+                  </a>
+                </li>
+    
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+export default () => {
+  return $render;
+}
+</script>

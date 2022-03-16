@@ -1,0 +1,50 @@
+<template>
+  <div class="page">
+  <div class="navbar">
+    <div class="navbar-bg"></div>
+    <div class="navbar-inner sliding">
+      <div class="left">
+        <a href="#" class="link back">
+          <i class="icon icon-back"></i>
+          <span class="if-not-md">Back</span>
+        </a>
+      </div>
+      <div class="title">Vodka Bull</div>
+    </div>
+  </div>
+    <div class="page-content">
+      <div class="block-title">Beschreibung</div>
+      <div class="block block-strong">
+        <p>Wodka Energy (auch Flügerl, Wodka-E, Ferrari oder Voddy Bull) ist ein Longdrink aus Wodka und einem Energydrink, der klassischerweise in einem Highball- oder Longdrinkglas mit oder ohne Eiswürfel serviert wird. Aufgrund der häufigen Verwendung des Energydrinks der Marke Red Bull wird das Getränk auch Wodka Red-Bull, Wodka Bull oder Flügerl (wegen des Werbeslogans Red Bull verleiht Flügel) genannt.</p>
+      </div>
+      <div class="block block-strong"><button class="button button-fill" id="mixit">mix it</button></div>
+    </div>
+  </div>
+</template>
+<script>
+  export default (props, { $, $f7, $on }) => {
+    $on('pageInit', () => {
+      $('#mixit').on('click', function() {
+        if('' !== ''){$f7.dialog.alert('');}
+        $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
+          //$f7.dialog.alert('Great!');
+          $f7.dialog.preloader('Vodka Bull wird zubereitet ...');
+          $f7.request.get('/ozapftis/VodkaBull').then((res) => {
+            setTimeout(function () {
+              $f7.dialog.close();
+              if('Mit Red Bull (oder anderen Energy Drinks) auffüllen. Nach Wunsch mit Johnnesbeersaft verfeinern - dann wird ein schwarzes Flügerl daraus. Alternativ etwas Cola und Limettensaft zugeben - dann wird ein Mexican on Ice daraus.' !== ''){$f7.dialog.alert('Mit Red Bull (oder anderen Energy Drinks) auffüllen. Nach Wunsch mit Johnnesbeersaft verfeinern - dann wird ein schwarzes Flügerl daraus. Alternativ etwas Cola und Limettensaft zugeben - dann wird ein Mexican on Ice daraus.');}
+            }, 1000);
+          });
+          /*
+          setTimeout(function () {
+            $f7.dialog.close();
+            if('Mit Red Bull (oder anderen Energy Drinks) auffüllen. Nach Wunsch mit Johnnesbeersaft verfeinern - dann wird ein schwarzes Flügerl daraus. Alternativ etwas Cola und Limettensaft zugeben - dann wird ein Mexican on Ice daraus.' !== ''){$f7.dialog.alert('Mit Red Bull (oder anderen Energy Drinks) auffüllen. Nach Wunsch mit Johnnesbeersaft verfeinern - dann wird ein schwarzes Flügerl daraus. Alternativ etwas Cola und Limettensaft zugeben - dann wird ein Mexican on Ice daraus.');}
+          }, 3000);
+          */
+        });
+      })
+    })
+
+    return $render;
+  }
+</script>

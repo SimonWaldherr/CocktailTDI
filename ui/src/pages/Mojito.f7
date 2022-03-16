@@ -1,0 +1,50 @@
+<template>
+  <div class="page">
+  <div class="navbar">
+    <div class="navbar-bg"></div>
+    <div class="navbar-inner sliding">
+      <div class="left">
+        <a href="#" class="link back">
+          <i class="icon icon-back"></i>
+          <span class="if-not-md">Back</span>
+        </a>
+      </div>
+      <div class="title">Mojito</div>
+    </div>
+  </div>
+    <div class="page-content">
+      <div class="block-title">Beschreibung</div>
+      <div class="block block-strong">
+        <p>Der Mojito ist ein Cocktail aus hellem kubanischen Rum, Limettensaft, Minze, Rohrzucker und Sodawasser. Er gehört zu den bekanntesten Mixgetränken.</p>
+      </div>
+      <div class="block block-strong"><button class="button button-fill" id="mixit">mix it</button></div>
+    </div>
+  </div>
+</template>
+<script>
+  export default (props, { $, $f7, $on }) => {
+    $on('pageInit', () => {
+      $('#mixit').on('click', function() {
+        if('Minzblatt, 1/3 Soda und 1/6 Limettensaft ins Glas geben.' !== ''){$f7.dialog.alert('Minzblatt, 1/3 Soda und 1/6 Limettensaft ins Glas geben.');}
+        $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
+          //$f7.dialog.alert('Great!');
+          $f7.dialog.preloader('Mojito wird zubereitet ...');
+          $f7.request.get('/ozapftis/Mojito').then((res) => {
+            setTimeout(function () {
+              $f7.dialog.close();
+              if('Umrühren.' !== ''){$f7.dialog.alert('Umrühren.');}
+            }, 1000);
+          });
+          /*
+          setTimeout(function () {
+            $f7.dialog.close();
+            if('Umrühren.' !== ''){$f7.dialog.alert('Umrühren.');}
+          }, 3000);
+          */
+        });
+      })
+    })
+
+    return $render;
+  }
+</script>
