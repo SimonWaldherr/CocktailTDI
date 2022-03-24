@@ -130,7 +130,7 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 
 			data = float64(data2-hx711.AdjustZero) / hx711.AdjustScale
 			fmt.Println(xmath.Round(data - taraAvg))
-			if int(data-taraAvg) > scaleDelta {
+			if int(data-taraAvg) > scaleDelta*2 {
 				fmt.Printf("data: %v, taraAvg: %v, xdata: %v, scaleDelta: %v\n", data, taraAvg, data-taraAvg, scaleDelta)
 				fmt.Println("voll")
 				c1 <- true
@@ -148,7 +148,8 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 }
 
 func main() {
-	dir := gopath.WD()
+	//dir := gopath.WD()
+	dir := "/home/pi/cocktail/ui/www/"
 	fmt.Println("DIR 1:", gopath.WD())
 	fmt.Println("DIR 2:", dir)
 	HTTPD := gwv.NewWebServer(8080, 60)
@@ -322,6 +323,7 @@ func main() {
 		gwv.Robots(as.String(cachedfile.Read(filepath.Join(dir, "..", "static", "robots.txt")))),
 		gwv.Favicon(filepath.Join(dir, "..", "static", "favicon.ico")),
 		gwv.StaticFiles("/", dir),
+		//gwv.StaticFiles("/ui/", dir),
 	)
 
 	HTTPD.Start()

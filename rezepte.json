@@ -197,10 +197,12 @@
     },
     {
         "Name": "Whisky",
-        "Zutaten": {
-            "Name": "Whisky",
-            "Menge": 20
-        },
+        "Zutaten": [
+            {
+                "Name": "Whisky",
+                "Menge": 20
+            }
+        ],
         "Kommentar": "",
         "Pre": "",
         "Post": "",
@@ -208,10 +210,12 @@
     },
     {
         "Name": "Zuckersirup",
-        "Zutaten": {
-            "Name": "Zuckersirup",
-            "Menge": 20
-        },
+        "Zutaten": [
+            {
+                "Name": "Zuckersirup",
+                "Menge": 20
+            }
+        ],
         "Kommentar": "",
         "Pre": "",
         "Post": "",
@@ -219,10 +223,12 @@
     },
     {
         "Name": "Zitronensaft",
-        "Zutaten": {
-            "Name": "Zitronensaft",
-            "Menge": 20
-        },
+        "Zutaten": [
+            {
+                "Name": "Zitronensaft",
+                "Menge": 20
+            }
+        ],
         "Kommentar": "",
         "Pre": "",
         "Post": "",
@@ -230,10 +236,12 @@
     },
     {
         "Name": "Rum",
-        "Zutaten": {
-            "Name": "Rum",
-            "Menge": 20
-        },
+        "Zutaten": [
+            {
+                "Name": "Rum",
+                "Menge": 20
+            }
+        ],
         "Kommentar": "",
         "Pre": "",
         "Post": "",
@@ -241,10 +249,12 @@
     },
     {
         "Name": "Cola",
-        "Zutaten": {
-            "Name": "Cola",
-            "Menge": 20
-        },
+        "Zutaten": [
+            {
+                "Name": "Cola",
+                "Menge": 20
+            }
+        ],
         "Kommentar": "",
         "Pre": "",
         "Post": "",
@@ -252,10 +262,12 @@
     },
     {
         "Name": "Vodka",
-        "Zutaten": {
-            "Name": "Vodka",
-            "Menge": 20
-        },
+        "Zutaten": [
+            {
+                "Name": "Vodka",
+                "Menge": 20
+            }
+        ],
         "Kommentar": "",
         "Pre": "",
         "Post": "",

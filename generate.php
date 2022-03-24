@@ -199,7 +199,7 @@ EOD;
 }
 
 foreach($allIngredients as $ingredient => $x) {
-    $jsonObject[] = array('Name' => $ingredient, 'Zutaten' => array('Name' => $ingredient, 'Menge' => 20), 'Kommentar' => '', 'Pre' => '', 'Post' => '', 'Wiki' => '');
+    $jsonObject[] = array('Name' => $ingredient, 'Zutaten' => array(array('Name' => $ingredient, 'Menge' => 20)), 'Kommentar' => '', 'Pre' => '', 'Post' => '', 'Wiki' => '');
     $routes1 .= 'import '.$ingredient.' from \'../pages/'.$ingredient.'.f7\';'."\n";
     $routes2 .= '{path: \'/'.$ingredient.'/\',component: '.$ingredient.',},';
     
