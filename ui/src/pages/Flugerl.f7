@@ -9,13 +9,13 @@
           <span class="if-not-md">Back</span>
         </a>
       </div>
-      <div class="title">Daiquiri</div>
+      <div class="title">Flugerl</div>
     </div>
   </div>
     <div class="page-content">
       <div class="block-title">Beschreibung</div>
       <div class="block block-strong">
-        <p>Der Daiquiri ist ein klassischer Cocktail auf Basis von weißem Rum. Der Shortdrink gehört zur großen Gruppe der Sours und wurde nach der kubanischen Siedlung Daiquirí benannt.</p>
+        <p>Dieses Flügerl wird mit Red Bull und Wodka zubereitet. Ein tolles Party Rezept, dass schnell zubereitet ist und toll aussieht.</p>
       </div>
       <div class="block block-strong"><button class="button button-fill" id="mixit">mix it</button></div>
     </div>
@@ -28,17 +28,17 @@
         if('' !== ''){$f7.dialog.alert('');}
         $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
           //$f7.dialog.alert('Great!');
-          $f7.dialog.preloader('Daiquiri wird zubereitet ...');
-          $f7.request.get('/ozapftis/Daiquiri').then((res) => {
+          $f7.dialog.preloader('Flugerl wird zubereitet ...');
+          $f7.request.get('/ozapftis/Flugerl').then((res) => {
             setTimeout(function () {
               $f7.dialog.close();
-              if('Mit Eiswürfel oder Crushed Ice (Frozen Daiquiri) auffüllen. Nach Wunsch mixen. Nach Wunsch mit Limettenschlitz verziehren.' !== ''){$f7.dialog.alert('Mit Eiswürfel oder Crushed Ice (Frozen Daiquiri) auffüllen. Nach Wunsch mixen. Nach Wunsch mit Limettenschlitz verziehren.');}
+              if('' !== ''){$f7.dialog.alert('');}
             }, 1000);
           });
           /*
           setTimeout(function () {
             $f7.dialog.close();
-            if('Mit Eiswürfel oder Crushed Ice (Frozen Daiquiri) auffüllen. Nach Wunsch mixen. Nach Wunsch mit Limettenschlitz verziehren.' !== ''){$f7.dialog.alert('Mit Eiswürfel oder Crushed Ice (Frozen Daiquiri) auffüllen. Nach Wunsch mixen. Nach Wunsch mit Limettenschlitz verziehren.');}
+            if('' !== ''){$f7.dialog.alert('');}
           }, 3000);
           */
         });

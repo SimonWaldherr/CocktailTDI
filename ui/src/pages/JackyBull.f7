@@ -9,13 +9,13 @@
           <span class="if-not-md">Back</span>
         </a>
       </div>
-      <div class="title">Collins</div>
+      <div class="title">JackyBull</div>
     </div>
   </div>
     <div class="page-content">
       <div class="block-title">Beschreibung</div>
       <div class="block block-strong">
-        <p>"Ein Collins ist ein alkoholhaltiger Cocktail, der auf dem klassischen Sour (Spirituose, Zitronensaft, Zuckersirup) aufbaut, aber wie ein Fizz zusätzlich Sodawasser enthält. Je nach Spirituose gibt es unterschiedliche Bezeichnungen: Cognac/Weinbrand: Pierre Collins, Brandy Collins; Gin: Tom Collins; Irish Whiskey: Mike Collins; weißer Rum: Ron Collins (span. Rum = Ron), Pedro Collins; brauner Rum: Rum Collins; Scotch Whisky: Sandy Collins; Tequila: Ruben Collins; Wodka: Joe Collins, Wodka Collins"</p>
+        <p>Whiskey + Red Bull. fertig.</p>
       </div>
       <div class="block block-strong"><button class="button button-fill" id="mixit">mix it</button></div>
     </div>
@@ -28,17 +28,17 @@
         if('' !== ''){$f7.dialog.alert('');}
         $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
           //$f7.dialog.alert('Great!');
-          $f7.dialog.preloader('Collins wird zubereitet ...');
-          $f7.request.get('/ozapftis/Collins').then((res) => {
+          $f7.dialog.preloader('JackyBull wird zubereitet ...');
+          $f7.request.get('/ozapftis/JackyBull').then((res) => {
             setTimeout(function () {
               $f7.dialog.close();
-              if('Mit Soda auffüllen, ca. 20%.' !== ''){$f7.dialog.alert('Mit Soda auffüllen, ca. 20%.');}
+              if('' !== ''){$f7.dialog.alert('');}
             }, 1000);
           });
           /*
           setTimeout(function () {
             $f7.dialog.close();
-            if('Mit Soda auffüllen, ca. 20%.' !== ''){$f7.dialog.alert('Mit Soda auffüllen, ca. 20%.');}
+            if('' !== ''){$f7.dialog.alert('');}
           }, 3000);
           */
         });

@@ -9,13 +9,13 @@
           <span class="if-not-md">Back</span>
         </a>
       </div>
-      <div class="title">Cuba Libre</div>
+      <div class="title">Spezial4</div>
     </div>
   </div>
     <div class="page-content">
       <div class="block-title">Beschreibung</div>
       <div class="block block-strong">
-        <p>Cuba Libre (spanisch für „Freies Kuba“) ist ein Longdrink mit Rum und Cola und oftmals Limetten, der um 1900 in Kuba entstand.</p>
+        <p>Probiers mal (ganz ohne Alkohol).</p>
       </div>
       <div class="block block-strong"><button class="button button-fill" id="mixit">mix it</button></div>
     </div>
@@ -28,17 +28,17 @@
         if('' !== ''){$f7.dialog.alert('');}
         $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
           //$f7.dialog.alert('Great!');
-          $f7.dialog.preloader('Cuba Libre wird zubereitet ...');
-          $f7.request.get('/ozapftis/CubaLibre').then((res) => {
+          $f7.dialog.preloader('Spezial4 wird zubereitet ...');
+          $f7.request.get('/ozapftis/Spezial4').then((res) => {
             setTimeout(function () {
               $f7.dialog.close();
-              if('Je nach Wunsch ein paar Spritzer Limettensaft zugeben.' !== ''){$f7.dialog.alert('Je nach Wunsch ein paar Spritzer Limettensaft zugeben.');}
+              if('' !== ''){$f7.dialog.alert('');}
             }, 1000);
           });
           /*
           setTimeout(function () {
             $f7.dialog.close();
-            if('Je nach Wunsch ein paar Spritzer Limettensaft zugeben.' !== ''){$f7.dialog.alert('Je nach Wunsch ein paar Spritzer Limettensaft zugeben.');}
+            if('' !== ''){$f7.dialog.alert('');}
           }, 3000);
           */
         });

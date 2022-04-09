@@ -9,13 +9,13 @@
           <span class="if-not-md">Back</span>
         </a>
       </div>
-      <div class="title">Old Fashioned</div>
+      <div class="title">Ruscherl</div>
     </div>
   </div>
     <div class="page-content">
       <div class="block-title">Beschreibung</div>
       <div class="block block-strong">
-        <p>Ein Old Fashioned (von englisch old-fashioned für altmodisch, althergebracht) ist einer der wichtigsten klassischen Cocktails. Im 19. Jahrhundert zunächst als Whiskey Cocktail, später Old Fashioned Whiskey Cocktail, bezeichnet, entspricht der Shortdrink noch heute weitgehend der Urform eines „Cocktails“ in seiner ursprünglichen Definition.</p>
+        <p>Rüscherl ist ein Klassiker unter den Zeltfest-Getränken. Unter dem exotischeren Namen "Cuba Libre" bekommt man den Klassiker auch in gehobenen Cocktailbars.</p>
       </div>
       <div class="block block-strong"><button class="button button-fill" id="mixit">mix it</button></div>
     </div>
@@ -25,20 +25,20 @@
   export default (props, { $, $f7, $on }) => {
     $on('pageInit', () => {
       $('#mixit').on('click', function() {
-        if('Etwas Zucker und Cocktailbitter in ein Glas geben. 2-3 Eiswürfel in das Glas hinzufügen.' !== ''){$f7.dialog.alert('Etwas Zucker und Cocktailbitter in ein Glas geben. 2-3 Eiswürfel in das Glas hinzufügen.');}
+        if('' !== ''){$f7.dialog.alert('');}
         $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
           //$f7.dialog.alert('Great!');
-          $f7.dialog.preloader('Old Fashioned wird zubereitet ...');
-          $f7.request.get('/ozapftis/OldFashioned').then((res) => {
+          $f7.dialog.preloader('Ruscherl wird zubereitet ...');
+          $f7.request.get('/ozapftis/Ruscherl').then((res) => {
             setTimeout(function () {
               $f7.dialog.close();
-              if('Je nach Wunsch Orangen- oder Zitronenscheiben zugeben.' !== ''){$f7.dialog.alert('Je nach Wunsch Orangen- oder Zitronenscheiben zugeben.');}
+              if('mit Johannisbeersaft wird ein schwarzes Rüscherl draus' !== ''){$f7.dialog.alert('mit Johannisbeersaft wird ein schwarzes Rüscherl draus');}
             }, 1000);
           });
           /*
           setTimeout(function () {
             $f7.dialog.close();
-            if('Je nach Wunsch Orangen- oder Zitronenscheiben zugeben.' !== ''){$f7.dialog.alert('Je nach Wunsch Orangen- oder Zitronenscheiben zugeben.');}
+            if('mit Johannisbeersaft wird ein schwarzes Rüscherl draus' !== ''){$f7.dialog.alert('mit Johannisbeersaft wird ein schwarzes Rüscherl draus');}
           }, 3000);
           */
         });

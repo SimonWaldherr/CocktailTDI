@@ -9,13 +9,13 @@
               <span class="if-not-md">Back</span>
             </a>
           </div>
-          <div class="title">Vodka</div>
+          <div class="title">Wodka</div>
         </div>
       </div>
         <div class="page-content">
           <div class="block-title">Beschreibung</div>
           <div class="block block-strong">
-            <p>Einfach nur Vodka - pur!</p>
+            <p>Einfach nur Wodka - pur!</p>
           </div>
           <div class="block block-strong"><button class="button button-fill" id="mixit">o'zapft is</button></div>
         </div>
@@ -28,7 +28,7 @@
           $('#mixit').on('click', function() {
             $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
               //$f7.dialog.alert('Great!');
-              $f7.dialog.preloader('Vodka wird eingefüllt ...');
+              $f7.dialog.preloader('Wodka wird eingefüllt ...');
               setTimeout(function () {
                 $f7.dialog.close();
               }, 3000);
@@ -39,8 +39,8 @@
         $on('pageInit', () => {
           $('#mixit').on('click', function() {
             $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
-              $f7.dialog.preloader('Vodka wird eingefüllt ...');
-              $f7.request.get('/ozapftis/Vodka').then((res) => {
+              $f7.dialog.preloader('Wodka wird eingefüllt ...');
+              $f7.request.get('/ozapftis/Wodka').then((res) => {
                 setTimeout(function () {
                   $f7.dialog.close();
                 }, 1000);

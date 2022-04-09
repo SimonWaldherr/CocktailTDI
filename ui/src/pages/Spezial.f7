@@ -9,13 +9,13 @@
           <span class="if-not-md">Back</span>
         </a>
       </div>
-      <div class="title">Tschunk</div>
+      <div class="title">Spezial</div>
     </div>
   </div>
     <div class="page-content">
       <div class="block-title">Beschreibung</div>
       <div class="block block-strong">
-        <p>Der Tschunk ist ein Cocktail aus Rum, Rohrzucker, Limetten und Club-Mate. Er ist überwiegend in der Hackerszene verbreitet (u. a. bei Mitgliedern des CCC).</p>
+        <p>Probiers mal.</p>
       </div>
       <div class="block block-strong"><button class="button button-fill" id="mixit">mix it</button></div>
     </div>
@@ -25,20 +25,20 @@
   export default (props, { $, $f7, $on }) => {
     $on('pageInit', () => {
       $('#mixit').on('click', function() {
-        if('4/8 Limette und Rohrzucker ins Glas geben und stampfen, 4 Eiswürfel hinzugeben.' !== ''){$f7.dialog.alert('4/8 Limette und Rohrzucker ins Glas geben und stampfen, 4 Eiswürfel hinzugeben.');}
+        if('' !== ''){$f7.dialog.alert('');}
         $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
           //$f7.dialog.alert('Great!');
-          $f7.dialog.preloader('Tschunk wird zubereitet ...');
-          $f7.request.get('/ozapftis/Tschunk').then((res) => {
+          $f7.dialog.preloader('Spezial wird zubereitet ...');
+          $f7.request.get('/ozapftis/Spezial').then((res) => {
             setTimeout(function () {
               $f7.dialog.close();
-              if('Glas mit Club Mate auffüllen.' !== ''){$f7.dialog.alert('Glas mit Club Mate auffüllen.');}
+              if('' !== ''){$f7.dialog.alert('');}
             }, 1000);
           });
           /*
           setTimeout(function () {
             $f7.dialog.close();
-            if('Glas mit Club Mate auffüllen.' !== ''){$f7.dialog.alert('Glas mit Club Mate auffüllen.');}
+            if('' !== ''){$f7.dialog.alert('');}
           }, 3000);
           */
         });

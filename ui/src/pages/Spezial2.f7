@@ -9,13 +9,13 @@
           <span class="if-not-md">Back</span>
         </a>
       </div>
-      <div class="title">Mojito</div>
+      <div class="title">Spezial2</div>
     </div>
   </div>
     <div class="page-content">
       <div class="block-title">Beschreibung</div>
       <div class="block block-strong">
-        <p>Der Mojito ist ein Cocktail aus hellem kubanischen Rum, Limettensaft, Minze, Rohrzucker und Sodawasser. Er gehört zu den bekanntesten Mixgetränken.</p>
+        <p>Probiers mal (mit mehr Bull).</p>
       </div>
       <div class="block block-strong"><button class="button button-fill" id="mixit">mix it</button></div>
     </div>
@@ -25,20 +25,20 @@
   export default (props, { $, $f7, $on }) => {
     $on('pageInit', () => {
       $('#mixit').on('click', function() {
-        if('Minzblatt, 1/3 Soda und 1/6 Limettensaft ins Glas geben.' !== ''){$f7.dialog.alert('Minzblatt, 1/3 Soda und 1/6 Limettensaft ins Glas geben.');}
+        if('' !== ''){$f7.dialog.alert('');}
         $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
           //$f7.dialog.alert('Great!');
-          $f7.dialog.preloader('Mojito wird zubereitet ...');
-          $f7.request.get('/ozapftis/Mojito').then((res) => {
+          $f7.dialog.preloader('Spezial2 wird zubereitet ...');
+          $f7.request.get('/ozapftis/Spezial2').then((res) => {
             setTimeout(function () {
               $f7.dialog.close();
-              if('Umrühren.' !== ''){$f7.dialog.alert('Umrühren.');}
+              if('' !== ''){$f7.dialog.alert('');}
             }, 1000);
           });
           /*
           setTimeout(function () {
             $f7.dialog.close();
-            if('Umrühren.' !== ''){$f7.dialog.alert('Umrühren.');}
+            if('' !== ''){$f7.dialog.alert('');}
           }, 3000);
           */
         });

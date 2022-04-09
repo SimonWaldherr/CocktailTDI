@@ -152,7 +152,7 @@ func main() {
 	dir := "/home/pi/cocktail/ui/www/"
 	fmt.Println("DIR 1:", gopath.WD())
 	fmt.Println("DIR 2:", dir)
-	HTTPD := gwv.NewWebServer(8080, 60)
+	HTTPD := gwv.NewWebServer(8081, 60)
 
 	fmt.Println("opening gpio")
 
@@ -171,31 +171,39 @@ func main() {
 
 	defer rpio.Close()
 
-	pinCola := rpio.Pin(17)
+	pinZutat := rpio.Pin(17)
+
+	for i := 1; i < 15; i++ {
+		pinZutat := rpio.Pin(pins[i])
+		pinZutat.Output()
+		time.Sleep(190 * time.Millisecond)
+		pinZutat.Input()
+		time.Sleep(190 * time.Millisecond)
+	}
 
 	rand.Seed(time.Now().Unix())
 
 	HTTPD.URLhandler(
 		gwv.URL("^/toggle/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
 			for i := 1; i < 17; i++ {
-				pinCola := rpio.Pin(pins[i])
-				pinCola.Output()
+				pinZutat := rpio.Pin(pins[i])
+				pinZutat.Output()
 				time.Sleep(time.Second / 5)
-				pinCola.Input()
+				pinZutat.Input()
 			}
 			return "/", http.StatusFound
 		}, gwv.HTML),
 		gwv.URL("^/ein/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
-			pinCola.Output()
+			pinZutat.Output()
 			return "/", http.StatusFound
 		}, gwv.HTML),
 		gwv.URL("^/aus/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
-			pinCola.Input()
+			pinZutat.Input()
 			return "/", http.StatusFound
 		}, gwv.HTML),
 		gwv.URL("^/select/?.*$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
 			pin := strings.Replace(req.RequestURI, "/select/", "", 1)
-			pinCola = rpio.Pin(pins[int(as.Int(pin))])
+			pinZutat = rpio.Pin(pins[int(as.Int(pin))])
 			return "", http.StatusOK
 		}, gwv.HTML),
 		gwv.URL("^/list/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
@@ -284,15 +292,15 @@ func main() {
 			for _, zut := range rezept.Zutaten {
 				fmt.Printf("    %v: %v\n", zut.Name, zut.Menge)
 				zutatPin := rpio.Pin(pins[zutaten[zut.Name]])
-				pumpe.Output()
-				fmt.Println("pumpe an")
-				entluft.Input()
-				fmt.Println("entlüft aus")
 
 				fmt.Println("starting go func")
 
 				go func() {
-					time.Sleep(2 * time.Second)
+					time.Sleep(1500 * time.Millisecond)
+					pumpe.Output()
+					fmt.Println("pumpe an")
+					entluft.Input()
+					fmt.Println("entlüft aus")
 					zutatPin.Output()
 					fmt.Println("pumpe an")
 					master.Output()
@@ -307,11 +315,14 @@ func main() {
 
 				master.Input()
 				entluft.Output()
-				time.Sleep(time.Second * 5)
-				zutatPin.Input()
-				fmt.Println("stop pump")
 				pumpe.Input()
+				fmt.Println("stop pump")
+
+				time.Sleep(time.Second * 2)
+				zutatPin.Input()
+				time.Sleep(time.Second * 1)
 			}
+
 			fmt.Printf("  Kommentar: %#v\n\n", rezept.Kommentar)
 
 			fmt.Printf("Ende.\n\n")

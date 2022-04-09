@@ -2,25 +2,25 @@
 import HomePage from '../pages/home.f7';
 import Random from '../pages/Random.f7';
 //import NotFoundPage from '../pages/404.f7';
-import OldFashioned from '../pages/OldFashioned.f7';
-import Manhattan from '../pages/Manhattan.f7';
-import Collins from '../pages/Collins.f7';
-import WhiskySour from '../pages/WhiskySour.f7';
-import Tschunk from '../pages/Tschunk.f7';
-import Mojito from '../pages/Mojito.f7';
-import PinaColada from '../pages/PinaColada.f7';
-import CubaLibre from '../pages/CubaLibre.f7';
-import Daiquiri from '../pages/Daiquiri.f7';
-import WhiskyCola from '../pages/WhiskyCola.f7';
-import VodkaLemon from '../pages/VodkaLemon.f7';
-import VodkaBull from '../pages/VodkaBull.f7';
-import Whisky from '../pages/Whisky.f7';
-import Zuckersirup from '../pages/Zuckersirup.f7';
-import Zitronensaft from '../pages/Zitronensaft.f7';
-import Rum from '../pages/Rum.f7';
+import Solero from '../pages/Solero.f7';
+import Ruscherl from '../pages/Ruscherl.f7';
+import RuscherlPlus from '../pages/RuscherlPlus.f7';
+import JackyCola from '../pages/JackyCola.f7';
+import Flugerl from '../pages/Flugerl.f7';
+import JackyBull from '../pages/JackyBull.f7';
+import WodkaSunrise from '../pages/WodkaSunrise.f7';
+import BourbonSunrise from '../pages/BourbonSunrise.f7';
+import Spezial from '../pages/Spezial.f7';
+import Spezial2 from '../pages/Spezial2.f7';
+import Spezial3 from '../pages/Spezial3.f7';
+import Spezial4 from '../pages/Spezial4.f7';
+import Wodka from '../pages/Wodka.f7';
+import Orangensaft from '../pages/Orangensaft.f7';
+import Asbach from '../pages/Asbach.f7';
 import Cola from '../pages/Cola.f7';
-import Vodka from '../pages/Vodka.f7';
-var routes = [{path: '/',component: HomePage,},{path: '/Random/',component: Random,},{path: '/OldFashioned/',component: OldFashioned,},{path: '/Manhattan/',component: Manhattan,},{path: '/Collins/',component: Collins,},{path: '/WhiskySour/',component: WhiskySour,},{path: '/Tschunk/',component: Tschunk,},{path: '/Mojito/',component: Mojito,},{path: '/PinaColada/',component: PinaColada,},{path: '/CubaLibre/',component: CubaLibre,},{path: '/Daiquiri/',component: Daiquiri,},{path: '/WhiskyCola/',component: WhiskyCola,},{path: '/VodkaLemon/',component: VodkaLemon,},{path: '/VodkaBull/',component: VodkaBull,},{path: '/Whisky/',component: Whisky,},{path: '/Zuckersirup/',component: Zuckersirup,},{path: '/Zitronensaft/',component: Zitronensaft,},{path: '/Rum/',component: Rum,},{path: '/Cola/',component: Cola,},{path: '/Vodka/',component: Vodka,},//{path: '(.*)',component: NotFoundPage,},
+import Whisky from '../pages/Whisky.f7';
+import RedBull from '../pages/RedBull.f7';
+var routes = [{path: '/',component: HomePage,},{path: '/Random/',component: Random,},{path: '/Solero/',component: Solero,},{path: '/Ruscherl/',component: Ruscherl,},{path: '/RuscherlPlus/',component: RuscherlPlus,},{path: '/JackyCola/',component: JackyCola,},{path: '/Flugerl/',component: Flugerl,},{path: '/JackyBull/',component: JackyBull,},{path: '/WodkaSunrise/',component: WodkaSunrise,},{path: '/BourbonSunrise/',component: BourbonSunrise,},{path: '/Spezial/',component: Spezial,},{path: '/Spezial2/',component: Spezial2,},{path: '/Spezial3/',component: Spezial3,},{path: '/Spezial4/',component: Spezial4,},{path: '/Wodka/',component: Wodka,},{path: '/Orangensaft/',component: Orangensaft,},{path: '/Asbach/',component: Asbach,},{path: '/Cola/',component: Cola,},{path: '/Whisky/',component: Whisky,},{path: '/RedBull/',component: RedBull,},//{path: '(.*)',component: NotFoundPage,},
 ];
 
 export default routes;

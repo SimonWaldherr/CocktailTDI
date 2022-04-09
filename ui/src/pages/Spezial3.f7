@@ -9,13 +9,13 @@
           <span class="if-not-md">Back</span>
         </a>
       </div>
-      <div class="title">Manhattan</div>
+      <div class="title">Spezial3</div>
     </div>
   </div>
     <div class="page-content">
       <div class="block-title">Beschreibung</div>
       <div class="block block-strong">
-        <p>Der klassische Manhattan Cocktail wird aus Whisky sowie rotem Wermut gemixt und als Aperitif getrunken. Nur echt mit der Kirsche!</p>
+        <p>Probiers mal (mit ganz wenig Alkohol).</p>
       </div>
       <div class="block block-strong"><button class="button button-fill" id="mixit">mix it</button></div>
     </div>
@@ -25,20 +25,20 @@
   export default (props, { $, $f7, $on }) => {
     $on('pageInit', () => {
       $('#mixit').on('click', function() {
-        if('1-2 Tropfen Cocktailbitter in das Glas geben' !== ''){$f7.dialog.alert('1-2 Tropfen Cocktailbitter in das Glas geben');}
+        if('' !== ''){$f7.dialog.alert('');}
         $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
           //$f7.dialog.alert('Great!');
-          $f7.dialog.preloader('Manhattan wird zubereitet ...');
-          $f7.request.get('/ozapftis/Manhattan').then((res) => {
+          $f7.dialog.preloader('Spezial3 wird zubereitet ...');
+          $f7.request.get('/ozapftis/Spezial3').then((res) => {
             setTimeout(function () {
               $f7.dialog.close();
-              if('Ungefähr halb so viel Wermut in das Glas geben wie Whisky im Glas ist. Mit Kirsch verzieren.' !== ''){$f7.dialog.alert('Ungefähr halb so viel Wermut in das Glas geben wie Whisky im Glas ist. Mit Kirsch verzieren.');}
+              if('' !== ''){$f7.dialog.alert('');}
             }, 1000);
           });
           /*
           setTimeout(function () {
             $f7.dialog.close();
-            if('Ungefähr halb so viel Wermut in das Glas geben wie Whisky im Glas ist. Mit Kirsch verzieren.' !== ''){$f7.dialog.alert('Ungefähr halb so viel Wermut in das Glas geben wie Whisky im Glas ist. Mit Kirsch verzieren.');}
+            if('' !== ''){$f7.dialog.alert('');}
           }, 3000);
           */
         });

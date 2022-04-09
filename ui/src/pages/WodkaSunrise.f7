@@ -9,13 +9,13 @@
           <span class="if-not-md">Back</span>
         </a>
       </div>
-      <div class="title">Pina Colada</div>
+      <div class="title">WodkaSunrise</div>
     </div>
   </div>
     <div class="page-content">
       <div class="block-title">Beschreibung</div>
       <div class="block block-strong">
-        <p>Die Piña Colada (von span. piña ‚Ananas‘ und colar ‚durchsieben‘) ist ein süßer, cremiger Cocktail aus Rum, Cream of Coconut und Ananassaft</p>
+        <p>Wodka + Orangensaft. fertig.</p>
       </div>
       <div class="block block-strong"><button class="button button-fill" id="mixit">mix it</button></div>
     </div>
@@ -25,20 +25,20 @@
   export default (props, { $, $f7, $on }) => {
     $on('pageInit', () => {
       $('#mixit').on('click', function() {
-        if('Glas zur Hälfte mit Ananassaft füllen.' !== ''){$f7.dialog.alert('Glas zur Hälfte mit Ananassaft füllen.');}
+        if('' !== ''){$f7.dialog.alert('');}
         $f7.dialog.confirm('Bereit? Glas am richtigen Platz?', function () {
           //$f7.dialog.alert('Great!');
-          $f7.dialog.preloader('Pina Colada wird zubereitet ...');
-          $f7.request.get('/ozapftis/PinaColada').then((res) => {
+          $f7.dialog.preloader('WodkaSunrise wird zubereitet ...');
+          $f7.request.get('/ozapftis/WodkaSunrise').then((res) => {
             setTimeout(function () {
               $f7.dialog.close();
-              if('Mit Crushed Ice und Kokosnussaft/-cream auffüllen (ca. 1/4). Umrühren, Mixen oder Shaken.' !== ''){$f7.dialog.alert('Mit Crushed Ice und Kokosnussaft/-cream auffüllen (ca. 1/4). Umrühren, Mixen oder Shaken.');}
+              if('' !== ''){$f7.dialog.alert('');}
             }, 1000);
           });
           /*
           setTimeout(function () {
             $f7.dialog.close();
-            if('Mit Crushed Ice und Kokosnussaft/-cream auffüllen (ca. 1/4). Umrühren, Mixen oder Shaken.' !== ''){$f7.dialog.alert('Mit Crushed Ice und Kokosnussaft/-cream auffüllen (ca. 1/4). Umrühren, Mixen oder Shaken.');}
+            if('' !== ''){$f7.dialog.alert('');}
           }, 3000);
           */
         });
