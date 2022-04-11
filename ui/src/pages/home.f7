@@ -33,6 +33,13 @@
               </a>
             </li>
             <li>
+              <a href="/SoleroLight/" class="item-content item-link">
+                <div class="item-inner">
+                  <div class="item-title">SoleroLight</div>
+                </div>
+              </a>
+            </li>
+            <li>
               <a href="/Ruscherl/" class="item-content item-link">
                 <div class="item-inner">
                   <div class="item-title">Ruscherl</div>

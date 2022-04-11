@@ -3,6 +3,7 @@ import HomePage from '../pages/home.f7';
 import Random from '../pages/Random.f7';
 //import NotFoundPage from '../pages/404.f7';
 import Solero from '../pages/Solero.f7';
+import SoleroLight from '../pages/SoleroLight.f7';
 import Ruscherl from '../pages/Ruscherl.f7';
 import RuscherlPlus from '../pages/RuscherlPlus.f7';
 import JackyCola from '../pages/JackyCola.f7';
@@ -20,7 +21,7 @@ import Asbach from '../pages/Asbach.f7';
 import Cola from '../pages/Cola.f7';
 import Whisky from '../pages/Whisky.f7';
 import RedBull from '../pages/RedBull.f7';
-var routes = [{path: '/',component: HomePage,},{path: '/Random/',component: Random,},{path: '/Solero/',component: Solero,},{path: '/Ruscherl/',component: Ruscherl,},{path: '/RuscherlPlus/',component: RuscherlPlus,},{path: '/JackyCola/',component: JackyCola,},{path: '/Flugerl/',component: Flugerl,},{path: '/JackyBull/',component: JackyBull,},{path: '/WodkaSunrise/',component: WodkaSunrise,},{path: '/BourbonSunrise/',component: BourbonSunrise,},{path: '/Spezial/',component: Spezial,},{path: '/Spezial2/',component: Spezial2,},{path: '/Spezial3/',component: Spezial3,},{path: '/Spezial4/',component: Spezial4,},{path: '/Wodka/',component: Wodka,},{path: '/Orangensaft/',component: Orangensaft,},{path: '/Asbach/',component: Asbach,},{path: '/Cola/',component: Cola,},{path: '/Whisky/',component: Whisky,},{path: '/RedBull/',component: RedBull,},//{path: '(.*)',component: NotFoundPage,},
+var routes = [{path: '/',component: HomePage,},{path: '/Random/',component: Random,},{path: '/Solero/',component: Solero,},{path: '/SoleroLight/',component: SoleroLight,},{path: '/Ruscherl/',component: Ruscherl,},{path: '/RuscherlPlus/',component: RuscherlPlus,},{path: '/JackyCola/',component: JackyCola,},{path: '/Flugerl/',component: Flugerl,},{path: '/JackyBull/',component: JackyBull,},{path: '/WodkaSunrise/',component: WodkaSunrise,},{path: '/BourbonSunrise/',component: BourbonSunrise,},{path: '/Spezial/',component: Spezial,},{path: '/Spezial2/',component: Spezial2,},{path: '/Spezial3/',component: Spezial3,},{path: '/Spezial4/',component: Spezial4,},{path: '/Wodka/',component: Wodka,},{path: '/Orangensaft/',component: Orangensaft,},{path: '/Asbach/',component: Asbach,},{path: '/Cola/',component: Cola,},{path: '/Whisky/',component: Whisky,},{path: '/RedBull/',component: RedBull,},//{path: '(.*)',component: NotFoundPage,},
 ];
 
 export default routes;

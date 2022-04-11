@@ -17,6 +17,19 @@
         "Wiki": null
     },
     {
+        "Name": "SoleroLight",
+        "Zutaten": [
+            {
+                "Name": "Orangensaft",
+                "Menge": 33
+            }
+        ],
+        "Kommentar": "Der\u00a0Solero\u00a0ist ein himmlisch fruchtiger Longdrink mit dem Geschmack reifer Tropenfr\u00fcchte und Vanille. Dieser Cocktail geh\u00f6rt an sich nicht zu den Klassikern, ist deswegen aber nicht minder beliebt bei allen Cocktail Fans.\u00a0",
+        "Vorher": "ein Spritzer Zitronensaft und ein Spritzer Vanillesirup ins Glas geben",
+        "Nachher": "mit Maracujasaft auff\u00fcllen",
+        "Wiki": null
+    },
+    {
         "Name": "Ruscherl",
         "Zutaten": [
             {
