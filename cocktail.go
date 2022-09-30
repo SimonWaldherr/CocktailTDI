@@ -2,21 +2,25 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
-	waage "github.com/MichaelS11/go-hx711"
-	"github.com/stianeikeland/go-rpio"
+	"log"
 	"math/rand"
 	"net/http"
 	"path/filepath"
 	"runtime"
+	"strings"
+	"time"
+
+	"github.com/SimonWaldherr/hx711go"
+	"golang.org/x/exp/io/i2c"
 	"simonwaldherr.de/go/golibs/as"
+	"simonwaldherr.de/go/golibs/bitmask"
 	"simonwaldherr.de/go/golibs/cachedfile"
 	"simonwaldherr.de/go/golibs/file"
 	"simonwaldherr.de/go/golibs/gopath"
 	"simonwaldherr.de/go/golibs/xmath"
 	"simonwaldherr.de/go/gwv"
-	"strings"
-	"time"
 )
 
 type Rezepte []struct {
@@ -30,34 +34,78 @@ type Rezepte []struct {
 	Nachher   string `json:"Nachher"`
 }
 
-var pins map[int]int
 var zutaten map[string]int
 var rezepte Rezepte
 
-func init() {
-	pins = map[int]int{
-		1:  2,
-		2:  3,
-		3:  4,
-		4:  17,
-		5:  27,
-		6:  22,
-		7:  10,
-		8:  9,
-		9:  11,
-		10: 5,
-		11: 6,
-		12: 13,
-		13: 19,
-		14: 26,
-		15: 21,
-		16: 20,
+var TargetWeight int
+var AdjustZero int
+var AdjustScale float64
+
+var pins map[int]int
+var i2cDev1, i2cDev2 *i2c.Device
+var bm1, bm2 *bitmask.Bitmask
+
+const (
+	I2C_ADDR = "/dev/i2c-1"
+)
+
+func setValve(valve int, status bool) {
+	var pin int
+	pin = pins[valve]
+
+	if pin > 7 {
+		pin = pin - 6
+		bm2.Set(pin, !status)
+		i2cDev2.Write([]byte{byte(bm2.Int())})
+		return
 	}
 
-	err := rpio.Open()
-	if err != nil {
-		panic(fmt.Sprint("unable to open gpio", err.Error()))
+	bm1.Set(pin, !status)
+	i2cDev1.Write([]byte{byte(bm1.Int())})
+}
+
+func setPump(status bool) {
+	bm2.Set(0, !status)
+	i2cDev2.Write([]byte{byte(bm2.Int())})
+}
+
+func setMasterValve(status bool) {
+	bm2.Set(1, !status)
+	i2cDev2.Write([]byte{byte(bm2.Int())})
+}
+
+func init() {
+	pins = map[int]int{
+		1:  0,
+		2:  1,
+		3:  2,
+		4:  3,
+		5:  4,
+		6:  5,
+		7:  8,
+		8:  9,
+		9:  10,
+		10: 11,
+		11: 12,
+		12: 13,
 	}
+
+	var err error
+	i2cDev1, err = i2c.Open(&i2c.Devfs{Dev: I2C_ADDR}, 0x20)
+	if err != nil {
+		panic(err)
+	}
+
+	i2cDev2, err = i2c.Open(&i2c.Devfs{Dev: I2C_ADDR}, 0x21)
+	if err != nil {
+		panic(err)
+	}
+
+	bm1 = bitmask.New(0b11111111)
+	bm2 = bitmask.New(0b11111111)
+
+	i2cDev1.Write([]byte{byte(bm1.Int())})
+	i2cDev2.Write([]byte{byte(bm2.Int())})
 
 	str, _ := file.Read("./zutaten.json")
 	err = json.Unmarshal([]byte(str), &zutaten)
@@ -81,7 +129,8 @@ func init() {
 }
 
 func scaleDelay(scaleDelta int, timeout time.Duration) {
-	hx711, err := waage.NewHx711("GPIO6", "GPIO5")
+	runtime.GC()
+	hx711, err := hx711.NewHx711("6", "5")
 
 	if err != nil {
 		fmt.Println("NewHx711 error:", err)
@@ -90,24 +139,30 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 
 	defer hx711.Shutdown()
 
-	err = hx711.Reset()
-	if err != nil {
-		fmt.Println("Reset error:", err)
-		return
+	for {
+		err = hx711.Reset()
+		if err == nil {
+			break
+		}
+		log.Print("hx711 BackgroundReadMovingAvgs Reset error:", err)
+		time.Sleep(time.Second)
 	}
 
-	hx711.AdjustZero = 128663
-	hx711.AdjustScale = 385.000000
+	hx711.AdjustZero = AdjustZero
+	hx711.AdjustScale = AdjustScale
 
 	c1 := make(chan bool, 1)
 	go func() {
 		var tara = []float64{}
+		var i int
+		var data, predata float64
 
-		var data float64
-		for i := 0; i < 3; i++ {
-			time.Sleep(200 * time.Microsecond)
+		fmt.Println("Tara")
 
-			data, err := hx711.ReadDataMedian(11)
+		for i = 0; i < 5; i++ {
+			time.Sleep(600 * time.Microsecond)
+
+			data, err := hx711.ReadDataMedian(3)
 			if err != nil {
 				fmt.Println("ReadDataRaw error:", err)
 				continue
@@ -117,22 +172,24 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 		}
 		taraAvg := float64(xmath.Round(xmath.Arithmetic(tara)))
 
-		fmt.Printf("new tara set to %v\n", taraAvg)
+		fmt.Printf("New tara set to: %v\n", taraAvg)
 
 		for {
-			time.Sleep(200 * time.Microsecond)
+			time.Sleep(10 * time.Millisecond)
 			data2, err := hx711.ReadDataRaw()
 
 			if err != nil {
-				fmt.Println("ReadDataRaw error:", err)
+				if fmt.Sprintln("ReadDataRaw error:", err) != "ReadDataRaw error: waitForDataReady error: timeout\n" {
+					fmt.Println("ReadDataRaw error:", err)
+				}
 				continue
 			}
 
-			data = float64(data2-hx711.AdjustZero) / hx711.AdjustScale
-			fmt.Println(xmath.Round(data - taraAvg))
-			if int(data-taraAvg) > scaleDelta*2 {
-				fmt.Printf("data: %v, taraAvg: %v, xdata: %v, scaleDelta: %v\n", data, taraAvg, data-taraAvg, scaleDelta)
-				fmt.Println("voll")
+			predata = data
+			data = (float64(data2-hx711.AdjustZero) / hx711.AdjustScale) - taraAvg
+
+			if int(data) > scaleDelta && int(predata) > scaleDelta {
+				fmt.Printf("set weight reached. weight is: %d\n", xmath.Round(data))
 				c1 <- true
 				return
 			}
@@ -143,69 +200,81 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 	case _ = <-c1:
 		return
 	case <-time.After(timeout):
+		fmt.Println("timeout")
 		return
 	}
 }
 
 func main() {
+	runtime.GOMAXPROCS(3)
+	flag.IntVar(&TargetWeight, "target", 100, "weight to be measured")
+	flag.IntVar(&AdjustZero, "zero", -94932, "adjust zero value")
+	flag.Float64Var(&AdjustScale, "scale", 62.8, "adjust scale value")
+	flag.Parse()
+
 	//dir := gopath.WD()
 	dir := "/home/pi/cocktail/ui/www/"
 	fmt.Println("DIR 1:", gopath.WD())
 	fmt.Println("DIR 2:", dir)
 	HTTPD := gwv.NewWebServer(8081, 60)
 
-	fmt.Println("opening gpio")
+	/*
+		fmt.Println("opening gpio")
 
-	pumpe := rpio.Pin(pins[16])
-	master := rpio.Pin(pins[15])
-	entluft := rpio.Pin(pins[14])
-	pumpe.Input()
-	master.Input()
-	entluft.Input()
+		pumpe := rpio.Pin(pins[16])
+		master := rpio.Pin(pins[15])
+		entluft := rpio.Pin(pins[14])
+		pumpe.Input()
+		master.Input()
+		entluft.Input()
+	*/
 
-	err := waage.HostInit()
+	err := hx711.HostInit()
 	if err != nil {
 		fmt.Println("HostInit error:", err)
 		return
 	}
 
-	defer rpio.Close()
+	//	defer rpio.Close()
 
-	pinZutat := rpio.Pin(17)
+	/*
+		pinZutat := rpio.Pin(17)
 
-	for i := 1; i < 15; i++ {
-		pinZutat := rpio.Pin(pins[i])
-		pinZutat.Output()
-		time.Sleep(190 * time.Millisecond)
-		pinZutat.Input()
-		time.Sleep(190 * time.Millisecond)
-	}
-
+		for i := 1; i < 15; i++ {
+			pinZutat := rpio.Pin(pins[i])
+			pinZutat.Output()
+			time.Sleep(190 * time.Millisecond)
+			pinZutat.Input()
+			time.Sleep(190 * time.Millisecond)
+		}
+	*/
 	rand.Seed(time.Now().Unix())
 
 	HTTPD.URLhandler(
-		gwv.URL("^/toggle/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
-			for i := 1; i < 17; i++ {
-				pinZutat := rpio.Pin(pins[i])
+		/*
+			gwv.URL("^/toggle/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
+				for i := 1; i < 17; i++ {
+					pinZutat := rpio.Pin(pins[i])
+					pinZutat.Output()
+					time.Sleep(time.Second / 5)
+					pinZutat.Input()
+				}
+				return "/", http.StatusFound
+			}, gwv.HTML),
+			gwv.URL("^/ein/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
 				pinZutat.Output()
-				time.Sleep(time.Second / 5)
+				return "/", http.StatusFound
+			}, gwv.HTML),
+			gwv.URL("^/aus/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
 				pinZutat.Input()
-			}
-			return "/", http.StatusFound
-		}, gwv.HTML),
-		gwv.URL("^/ein/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
-			pinZutat.Output()
-			return "/", http.StatusFound
-		}, gwv.HTML),
-		gwv.URL("^/aus/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
-			pinZutat.Input()
-			return "/", http.StatusFound
-		}, gwv.HTML),
-		gwv.URL("^/select/?.*$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
-			pin := strings.Replace(req.RequestURI, "/select/", "", 1)
-			pinZutat = rpio.Pin(pins[int(as.Int(pin))])
-			return "", http.StatusOK
-		}, gwv.HTML),
+				return "/", http.StatusFound
+			}, gwv.HTML),
+			gwv.URL("^/select/?.*$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
+				pin := strings.Replace(req.RequestURI, "/select/", "", 1)
+				pinZutat = rpio.Pin(pins[int(as.Int(pin))])
+				return "", http.StatusOK
+			}, gwv.HTML),
+		*/
 		gwv.URL("^/list/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
 			var ret string
 
@@ -226,46 +295,47 @@ func main() {
 			}
 			return ret, http.StatusOK
 		}, gwv.HTML),
-		gwv.URL("^/test/\\d*/\\d*$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
-			pumpe.Output()
-			fmt.Println("pumpe an")
-			entluft.Input()
-			fmt.Println("entlüft aus")
-
-			fmt.Println(req.RequestURI)
-
-			testStr := strings.Replace(req.RequestURI, "/test/", "", 1)
-			testArr := strings.Split(testStr, "/")
-			testPin := rpio.Pin(pins[int(as.Int(testArr[0]))])
-
-			fmt.Println("starting go func")
-
-			go func() {
-				time.Sleep(2 * time.Second)
-				testPin.Output()
+		/*
+			gwv.URL("^/test/\\d* /\\d*$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
+				pumpe.Output()
 				fmt.Println("pumpe an")
-				master.Output()
 				entluft.Input()
-			}()
+				fmt.Println("entlüft aus")
 
-			fmt.Println("starting scale")
+				fmt.Println(req.RequestURI)
 
-			scaleDelay(int(as.Int(testArr[1])), 4*time.Minute)
+				testStr := strings.Replace(req.RequestURI, "/test/", "", 1)
+				testArr := strings.Split(testStr, "/")
+				testPin := rpio.Pin(pins[int(as.Int(testArr[0]))])
 
-			fmt.Println("scale delay ready")
+				fmt.Println("starting go func")
 
-			master.Input()
-			entluft.Output()
-			time.Sleep(time.Second * 5)
-			testPin.Input()
-			fmt.Println("stop pump")
+				go func() {
+					time.Sleep(2 * time.Second)
+					testPin.Output()
+					fmt.Println("pumpe an")
+					master.Output()
+					entluft.Input()
+				}()
 
-			pumpe.Input()
-			return "", http.StatusOK
-		}, gwv.HTML),
+				fmt.Println("starting scale")
+
+				scaleDelay(int(as.Int(testArr[1])), 4*time.Minute)
+
+				fmt.Println("scale delay ready")
+
+				master.Input()
+				entluft.Output()
+				time.Sleep(time.Second * 5)
+				testPin.Input()
+				fmt.Println("stop pump")
+
+				pumpe.Input()
+				return "", http.StatusOK
+			}, gwv.HTML),
+		*/
 		gwv.URL("^/ozapftis/?.*$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
 			wunschCocktail := strings.Replace(req.RequestURI, "/ozapftis/", "", 1)
-			pumpe := rpio.Pin(pins[16])
 
 			var rezept struct {
 				Name    string "json:\"Name\""
@@ -291,35 +361,23 @@ func main() {
 			fmt.Printf("  Zutaten:\n")
 			for _, zut := range rezept.Zutaten {
 				fmt.Printf("    %v: %v\n", zut.Name, zut.Menge)
-				zutatPin := rpio.Pin(pins[zutaten[zut.Name]])
+				zutatPin := pins[zutaten[zut.Name]]
 
 				fmt.Println("starting go func")
 
 				go func() {
-					time.Sleep(1500 * time.Millisecond)
-					pumpe.Output()
-					fmt.Println("pumpe an")
-					entluft.Input()
-					fmt.Println("entlüft aus")
-					zutatPin.Output()
-					fmt.Println("pumpe an")
-					master.Output()
-					entluft.Input()
+					time.Sleep(1800 * time.Millisecond)
+					setPump(true)
+					setMasterValve(true)
+					setValve(zutatPin, true)
 				}()
-
-				fmt.Println("starting scale")
 
 				scaleDelay(int(as.Int(zut.Menge)), 2*time.Minute)
 
-				fmt.Println("scale delay ready")
+				setPump(false)
+				setMasterValve(false)
+				setValve(zutatPin, false)
 
-				master.Input()
-				entluft.Output()
-				pumpe.Input()
-				fmt.Println("stop pump")
-
-				time.Sleep(time.Second * 2)
-				zutatPin.Input()
 				time.Sleep(time.Second * 1)
 			}
 
