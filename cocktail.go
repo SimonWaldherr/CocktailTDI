@@ -15,9 +15,12 @@ import (
 	"unsafe"
 
 	hx711 "github.com/SimonWaldherr/hx711go"
+	nau7802 "github.com/SimonWaldherr/nau7802"
+
 	"github.com/edsrzf/mmap-go"
 	"github.com/stianeikeland/go-rpio"
 	"golang.org/x/exp/io/i2c"
+
 	"simonwaldherr.de/go/golibs/as"
 	"simonwaldherr.de/go/golibs/bitmask"
 	"simonwaldherr.de/go/golibs/cachedfile"
@@ -51,12 +54,11 @@ var pins map[int]int
 var i2cDev1, i2cDev2 *i2c.Device
 var bm1, bm2 *bitmask.Bitmask
 
+var nau7802d *nau7802.NAU7802
+
 const (
 	I2C_ADDR = "/dev/i2c-1"
 )
-
-
-
 
 func setValve(valve int, status bool) {
 	var pin int
@@ -239,7 +241,7 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 			fmt.Println("timeout")
 			return
 		}
-	} else if ScaleType == "nau7802" {
+	} else if ScaleType == "nau7802py" {
 		// Open the shared memory file
 		file, err := os.OpenFile("my_shared_memory", os.O_RDONLY, 0644)
 		if err != nil {
@@ -315,6 +317,60 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 				time.Sleep(500 * time.Millisecond)
 			}
 		*/
+	} else if ScaleType == "nau7802" {
+		c1 := make(chan bool, 1)
+		go func() {
+			var tara = []float64{}
+			var i int
+			var data, predata float64
+
+			fmt.Println("Tara")
+
+			for i = 0; i < 5; i++ {
+				time.Sleep(600 * time.Microsecond)
+
+				data, err := nau7802d.GetWeight(true, 3)
+				if err != nil {
+					fmt.Println("ReadDataRaw error:", err)
+					continue
+				}
+
+				tara = append(tara, data)
+			}
+			taraAvg := float64(xmath.Round(xmath.Arithmetic(tara)))
+
+			fmt.Printf("New tara set to: %v\n", taraAvg)
+
+			for {
+				time.Sleep(10 * time.Millisecond)
+				data2, err := nau7802d.GetWeight(true, 3)
+
+				if err != nil {
+					if fmt.Sprintln("ReadDataRaw error:", err) != "ReadDataRaw error: waitForDataReady error: timeout\n" {
+						fmt.Println("ReadDataRaw error:", err)
+					}
+					continue
+				}
+
+				predata = data
+				//data = (float64(data2-hx711.AdjustZero) / hx711.AdjustScale) - taraAvg
+				data = data2 - taraAvg
+
+				if int(data) > scaleDelta && int(predata) > scaleDelta {
+					fmt.Printf("set weight reached. weight is: %d\n", xmath.Round(data))
+					c1 <- true
+					return
+				}
+			}
+		}()
+
+		select {
+		case _ = <-c1:
+			return
+		case <-time.After(timeout):
+			fmt.Println("timeout")
+			return
+		}
 	}
 
 }
@@ -333,8 +389,14 @@ func main() {
 			fmt.Println("HostInit error:", err)
 			return
 		}
-	} else if ScaleType == "nau7802" {
+	} else if ScaleType == "nau7802py" {
 		// do nothing
+	} else if ScaleType == "nau7802" {
+		var err error
+		nau7802d, err = nau7802.Initialize()
+		if err != nil {
+			fmt.Println("nau7802.Initialize error:", err)
+		}
 	}
 
 	//dir := gopath.WD()
