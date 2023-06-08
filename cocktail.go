@@ -16,6 +16,7 @@ import (
 
 	hx711 "github.com/SimonWaldherr/hx711go"
 	"github.com/edsrzf/mmap-go"
+	"github.com/stianeikeland/go-rpio"
 	"golang.org/x/exp/io/i2c"
 	"simonwaldherr.de/go/golibs/as"
 	"simonwaldherr.de/go/golibs/bitmask"
@@ -54,6 +55,9 @@ const (
 	I2C_ADDR = "/dev/i2c-1"
 )
 
+
+
+
 func setValve(valve int, status bool) {
 	var pin int
 	pin = pins[valve]
@@ -79,6 +83,26 @@ func setMasterValve(status bool) {
 	i2cDev2.Write([]byte{byte(bm2.Int())})
 }
 
+func setPowerLED(status bool) {
+	pin := rpio.Pin(13)
+	pin.Output() // Output mode
+	if status == true {
+		pin.High()
+	} else {
+		pin.Low()
+	}
+}
+
+func setProgressLED(status bool) {
+	pin := rpio.Pin(21)
+	pin.Output() // Output mode
+	if status == true {
+		pin.High()
+	} else {
+		pin.Low()
+	}
+}
+
 func init() {
 	pins = map[int]int{
 		1:  0,
@@ -96,6 +120,12 @@ func init() {
 	}
 
 	var err error
+
+	err = rpio.Open()
+	if err != nil {
+		panic(fmt.Sprint("unable to open gpio", err.Error()))
+	}
+
 	i2cDev1, err = i2c.Open(&i2c.Devfs{Dev: I2C_ADDR}, 0x20)
 	if err != nil {
 		panic(err)
@@ -339,6 +369,8 @@ func main() {
 	*/
 	rand.Seed(time.Now().Unix())
 
+	setPowerLED(true)
+
 	HTTPD.URLhandler(
 		/*
 			gwv.URL("^/toggle/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
@@ -425,6 +457,7 @@ func main() {
 		*/
 		gwv.URL("^/ozapftis/?.*$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
 			wunschCocktail := strings.Replace(req.RequestURI, "/ozapftis/", "", 1)
+			setProgressLED(true)
 
 			var rezept struct {
 				Name    string "json:\"Name\""
@@ -457,7 +490,10 @@ func main() {
 				go func() {
 					time.Sleep(1800 * time.Millisecond)
 					setPump(true)
+					setMasterValve(false)
+					time.Sleep(6 * time.Second)
 					setMasterValve(true)
+					time.Sleep(100 * time.Millisecond)
 					setValve(zutatPin, true)
 				}()
 
@@ -471,6 +507,20 @@ func main() {
 			}
 
 			fmt.Printf("  Kommentar: %#v\n\n", rezept.Kommentar)
+
+			fmt.Printf("Ende.\n\n")
+			setProgressLED(false)
+			return "/", http.StatusFound
+		}, gwv.HTML),
+		gwv.URL("^/notaus/?.*$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
+
+			setPump(false)
+			setMasterValve(false)
+
+			for pin := range pins {
+				time.Sleep(time.Millisecond * 20)
+				setValve(pin, false)
+			}
 
 			fmt.Printf("Ende.\n\n")
 			return "/", http.StatusFound
