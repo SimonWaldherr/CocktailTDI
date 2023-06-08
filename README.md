@@ -1,5 +1,7 @@
 # CocktailTDI_Beta
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/simonwaldherr/cocktailtdi)](https://goreportcard.com/report/github.com/simonwaldherr/cocktailtdi)  
+
 work in progress
 
 ## howto
