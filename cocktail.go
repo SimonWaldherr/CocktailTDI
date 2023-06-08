@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 	"time"
 	"unsafe"
 
@@ -54,10 +55,13 @@ var pins map[int]int
 var i2cDev1, i2cDev2 *i2c.Device
 var bm1, bm2 *bitmask.Bitmask
 
+var mutex sync.Mutex
+
 var nau7802d *nau7802.NAU7802
 
 const (
-	I2C_ADDR = "/dev/i2c-1"
+	I2C_ADDR  = "/dev/i2c-1"
+	I2C_ADDR2 = "/dev/i2c-0"
 )
 
 func setValve(valve int, status bool) {
@@ -67,22 +71,41 @@ func setValve(valve int, status bool) {
 	if pin > 7 {
 		pin = pin - 6
 		bm2.Set(pin, !status)
+		mutex.Lock()
+		time.Sleep(10 * time.Millisecond)
 		i2cDev2.Write([]byte{byte(bm2.Int())})
+		time.Sleep(10 * time.Millisecond)
+		mutex.Unlock()
 		return
 	}
 
 	bm1.Set(pin, !status)
+
+	mutex.Lock()
+	time.Sleep(10 * time.Millisecond)
 	i2cDev1.Write([]byte{byte(bm1.Int())})
+	time.Sleep(10 * time.Millisecond)
+	mutex.Unlock()
 }
 
 func setPump(status bool) {
 	bm2.Set(0, !status)
+
+	mutex.Lock()
+	time.Sleep(10 * time.Millisecond)
 	i2cDev2.Write([]byte{byte(bm2.Int())})
+	time.Sleep(10 * time.Millisecond)
+	mutex.Unlock()
 }
 
 func setMasterValve(status bool) {
 	bm2.Set(1, !status)
+
+	mutex.Lock()
+	time.Sleep(10 * time.Millisecond)
 	i2cDev2.Write([]byte{byte(bm2.Int())})
+	time.Sleep(10 * time.Millisecond)
+	mutex.Unlock()
 }
 
 func setPowerLED(status bool) {
@@ -128,12 +151,12 @@ func init() {
 		panic(fmt.Sprint("unable to open gpio", err.Error()))
 	}
 
-	i2cDev1, err = i2c.Open(&i2c.Devfs{Dev: I2C_ADDR}, 0x20)
+	i2cDev1, err = i2c.Open(&i2c.Devfs{Dev: I2C_ADDR2}, 0x20)
 	if err != nil {
 		panic(err)
 	}
 
-	i2cDev2, err = i2c.Open(&i2c.Devfs{Dev: I2C_ADDR}, 0x21)
+	i2cDev2, err = i2c.Open(&i2c.Devfs{Dev: I2C_ADDR2}, 0x21)
 	if err != nil {
 		panic(err)
 	}
@@ -141,8 +164,12 @@ func init() {
 	bm1 = bitmask.New(0b11111111)
 	bm2 = bitmask.New(0b11111111)
 
+	mutex.Lock()
+	time.Sleep(10 * time.Millisecond)
 	i2cDev1.Write([]byte{byte(bm1.Int())})
 	i2cDev2.Write([]byte{byte(bm2.Int())})
+	time.Sleep(10 * time.Millisecond)
+	mutex.Unlock()
 
 	str, _ := file.Read("./zutaten.json")
 	err = json.Unmarshal([]byte(str), &zutaten)
@@ -329,7 +356,12 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 			for i = 0; i < 5; i++ {
 				time.Sleep(600 * time.Microsecond)
 
-				data, err := nau7802d.GetWeight(true, 3)
+				mutex.Lock()
+				time.Sleep(30 * time.Millisecond)
+				data, err := nau7802d.GetWeight(true, 1)
+				time.Sleep(30 * time.Millisecond)
+				mutex.Unlock()
+
 				if err != nil {
 					fmt.Println("ReadDataRaw error:", err)
 					continue
@@ -342,8 +374,13 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 			fmt.Printf("New tara set to: %v\n", taraAvg)
 
 			for {
-				time.Sleep(10 * time.Millisecond)
-				data2, err := nau7802d.GetWeight(true, 3)
+				time.Sleep(20 * time.Millisecond)
+
+				mutex.Lock()
+				time.Sleep(30 * time.Millisecond)
+				data2, err := nau7802d.GetWeight(true, 1)
+				time.Sleep(30 * time.Millisecond)
+				mutex.Unlock()
 
 				if err != nil {
 					if fmt.Sprintln("ReadDataRaw error:", err) != "ReadDataRaw error: waitForDataReady error: timeout\n" {
@@ -376,11 +413,13 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 }
 
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
 	runtime.GOMAXPROCS(3)
 	flag.IntVar(&TargetWeight, "target", 100, "weight to be measured")
 	flag.IntVar(&AdjustZero, "zero", -94932, "adjust zero value")
 	flag.Float64Var(&AdjustScale, "scale", 62.8, "adjust scale value")
-	flag.StringVar(&ScaleType, "scaleType", "hx711", "use hx711 or nau7802 scale")
+	flag.StringVar(&ScaleType, "scaleType", "nau7802", "use hx711, nau7802 or nau7802py scale")
 	flag.Parse()
 
 	if ScaleType == "hx711" {
@@ -393,10 +432,27 @@ func main() {
 		// do nothing
 	} else if ScaleType == "nau7802" {
 		var err error
+		mutex.Lock()
+		time.Sleep(10 * time.Millisecond)
 		nau7802d, err = nau7802.Initialize()
+		nau_zero, _ := nau7802d.GetWeight(true, 1)
+		time.Sleep(10 * time.Millisecond)
+		mutex.Unlock()
 		if err != nil {
 			fmt.Println("nau7802.Initialize error:", err)
 		}
+
+		go func() {
+			for {
+				weight, err := nau7802d.GetWeight(true, 1)
+				if err != nil {
+					fmt.Println("## nau7802.GetWeight error:", err)
+				} else {
+					fmt.Println("## nau7802.GetWeight:", weight-nau_zero)
+				}
+				time.Sleep(1 * time.Second)
+			}
+		}()
 	}
 
 	//dir := gopath.WD()
@@ -552,8 +608,9 @@ func main() {
 				go func() {
 					time.Sleep(1800 * time.Millisecond)
 					setPump(true)
-					setMasterValve(false)
-					time.Sleep(6 * time.Second)
+					//setMasterValve(false)
+					time.Sleep(100 * time.Millisecond)
+					//time.Sleep(6 * time.Second)
 					setMasterValve(true)
 					time.Sleep(100 * time.Millisecond)
 					setValve(zutatPin, true)
