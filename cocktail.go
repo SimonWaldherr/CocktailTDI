@@ -435,24 +435,11 @@ func main() {
 		mutex.Lock()
 		time.Sleep(10 * time.Millisecond)
 		nau7802d, err = nau7802.Initialize()
-		nau_zero, _ := nau7802d.GetWeight(true, 1)
 		time.Sleep(10 * time.Millisecond)
 		mutex.Unlock()
 		if err != nil {
 			fmt.Println("nau7802.Initialize error:", err)
 		}
-
-		go func() {
-			for {
-				weight, err := nau7802d.GetWeight(true, 1)
-				if err != nil {
-					fmt.Println("## nau7802.GetWeight error:", err)
-				} else {
-					fmt.Println("## nau7802.GetWeight:", weight-nau_zero)
-				}
-				time.Sleep(1 * time.Second)
-			}
-		}()
 	}
 
 	//dir := gopath.WD()

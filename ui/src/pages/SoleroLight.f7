@@ -32,13 +32,13 @@
           $f7.request.get('/ozapftis/SoleroLight').then((res) => {
             setTimeout(function () {
               $f7.dialog.close();
-              if('mit Maracujasaft auffüllen' !== ''){$f7.dialog.alert('mit Maracujasaft auffüllen');}
+              if('' !== ''){$f7.dialog.alert('');}
             }, 1000);
           });
           /*
           setTimeout(function () {
             $f7.dialog.close();
-            if('mit Maracujasaft auffüllen' !== ''){$f7.dialog.alert('mit Maracujasaft auffüllen');}
+            if('' !== ''){$f7.dialog.alert('');}
           }, 3000);
           */
         });

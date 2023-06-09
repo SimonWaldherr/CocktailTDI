@@ -4,5 +4,8 @@
   "Asbach":  4,
   "Cola": 5,
   "Whisky":   6,
-  "RedBull":  7
+  "RedBull":  7,
+  "Gin": 8,
+  "Tonic": 9,
+  "Maracuja": 10
 }

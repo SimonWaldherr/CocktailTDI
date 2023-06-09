@@ -9,11 +9,15 @@
             {
                 "Name": "Orangensaft",
                 "Menge": 33
+            },
+            {
+                "Name": "Maracuja",
+                "Menge": 20
             }
         ],
         "Kommentar": "Der\u00a0Solero\u00a0ist ein himmlisch fruchtiger Longdrink mit dem Geschmack reifer Tropenfr\u00fcchte und Vanille. Dieser Cocktail geh\u00f6rt an sich nicht zu den Klassikern, ist deswegen aber nicht minder beliebt bei allen Cocktail Fans.\u00a0",
         "Vorher": "ein Spritzer Zitronensaft und ein Spritzer Vanillesirup ins Glas geben",
-        "Nachher": "mit Maracujasaft auff\u00fcllen",
+        "Nachher": "",
         "Wiki": null
     },
     {
@@ -22,11 +26,15 @@
             {
                 "Name": "Orangensaft",
                 "Menge": 33
+            },
+            {
+                "Name": "Maracuja",
+                "Menge": 20
             }
         ],
         "Kommentar": "Der\u00a0Solero\u00a0ist ein himmlisch fruchtiger Longdrink mit dem Geschmack reifer Tropenfr\u00fcchte und Vanille. Dieser Cocktail geh\u00f6rt an sich nicht zu den Klassikern, ist deswegen aber nicht minder beliebt bei allen Cocktail Fans.\u00a0",
         "Vorher": "ein Spritzer Zitronensaft und ein Spritzer Vanillesirup ins Glas geben",
-        "Nachher": "mit Maracujasaft auff\u00fcllen",
+        "Nachher": "",
         "Wiki": null
     },
     {
@@ -38,7 +46,7 @@
             },
             {
                 "Name": "Cola",
-                "Menge": 79
+                "Menge": 60
             }
         ],
         "Kommentar": "R\u00fcscherl ist ein Klassiker unter den Zeltfest-Getr\u00e4nken. Unter dem exotischeren Namen \"Cuba Libre\" bekommt man den Klassiker auch in gehobenen Cocktailbars.",
@@ -51,11 +59,11 @@
         "Zutaten": [
             {
                 "Name": "Asbach",
-                "Menge": 40
+                "Menge": 30
             },
             {
                 "Name": "Cola",
-                "Menge": 60
+                "Menge": 50
             }
         ],
         "Kommentar": "R\u00fcscherl ist ein Klassiker unter den Zeltfest-Getr\u00e4nken. Unter dem exotischeren Namen \"Cuba Libre\" bekommt man den Klassiker auch in gehobenen Cocktailbars. Mit mehr Alkohol.",
@@ -68,11 +76,11 @@
         "Zutaten": [
             {
                 "Name": "Cola",
-                "Menge": 70
+                "Menge": 65
             },
             {
                 "Name": "Whisky",
-                "Menge": 20
+                "Menge": 15
             }
         ],
         "Kommentar": "Der Whisky-Cola ist so ziemlich der Klassiker unter den Highball-Cocktails\u00a0",
@@ -85,11 +93,11 @@
         "Zutaten": [
             {
                 "Name": "Wodka",
-                "Menge": 29
+                "Menge": 20
             },
             {
                 "Name": "RedBull",
-                "Menge": 70
+                "Menge": 60
             }
         ],
         "Kommentar": "Dieses Fl\u00fcgerl wird mit Red Bull und Wodka zubereitet. Ein tolles Party Rezept, dass schnell zubereitet ist und toll aussieht.",
@@ -102,11 +110,11 @@
         "Zutaten": [
             {
                 "Name": "Whisky",
-                "Menge": 20
+                "Menge": 15
             },
             {
                 "Name": "RedBull",
-                "Menge": 75
+                "Menge": 60
             }
         ],
         "Kommentar": "Whiskey + Red Bull. fertig.",
@@ -119,11 +127,11 @@
         "Zutaten": [
             {
                 "Name": "Wodka",
-                "Menge": 30
+                "Menge": 25
             },
             {
                 "Name": "Orangensaft",
-                "Menge": 65
+                "Menge": 60
             }
         ],
         "Kommentar": "Wodka + Orangensaft. fertig.",
@@ -136,14 +144,73 @@
         "Zutaten": [
             {
                 "Name": "Orangensaft",
-                "Menge": 75
+                "Menge": 65
             },
             {
                 "Name": "Whisky",
-                "Menge": 25
+                "Menge": 20
             }
         ],
         "Kommentar": "Der Bourbon Sunrise ist eine abgewandelte Variante des Tequila Sunrise.",
+        "Vorher": "",
+        "Nachher": "",
+        "Wiki": null
+    },
+    {
+        "Name": "GinTonic",
+        "Zutaten": [
+            {
+                "Name": "Gin",
+                "Menge": 15
+            },
+            {
+                "Name": "Tonic",
+                "Menge": 45
+            }
+        ],
+        "Kommentar": "Gin Tonic ist ein klassischer Longdrink aus Gin und Tonic Water.",
+        "Vorher": "",
+        "Nachher": "",
+        "Wiki": null
+    },
+    {
+        "Name": "GinTonicPlus",
+        "Zutaten": [
+            {
+                "Name": "Gin",
+                "Menge": 30
+            },
+            {
+                "Name": "Tonic",
+                "Menge": 30
+            }
+        ],
+        "Kommentar": "Gin Tonic ist ein klassischer Longdrink aus Gin und Tonic Water.",
+        "Vorher": "",
+        "Nachher": "",
+        "Wiki": null
+    },
+    {
+        "Name": "Tropical",
+        "Zutaten": [
+            {
+                "Name": "Orangensaft",
+                "Menge": 20
+            },
+            {
+                "Name": "Maracuja",
+                "Menge": 20
+            },
+            {
+                "Name": "Gin",
+                "Menge": 15
+            },
+            {
+                "Name": "Tonic",
+                "Menge": 10
+            }
+        ],
+        "Kommentar": "Tropical - eine fruchtige Kombination aus Gin, Orangensaft und Maracujasaft.",
         "Vorher": "",
         "Nachher": "",
         "Wiki": null
@@ -291,6 +358,19 @@
         "Wiki": ""
     },
     {
+        "Name": "Maracuja",
+        "Zutaten": [
+            {
+                "Name": "Maracuja",
+                "Menge": 20
+            }
+        ],
+        "Kommentar": "",
+        "Pre": "",
+        "Post": "",
+        "Wiki": ""
+    },
+    {
         "Name": "Asbach",
         "Zutaten": [
             {
@@ -334,6 +414,32 @@
         "Zutaten": [
             {
                 "Name": "RedBull",
+                "Menge": 20
+            }
+        ],
+        "Kommentar": "",
+        "Pre": "",
+        "Post": "",
+        "Wiki": ""
+    },
+    {
+        "Name": "Gin",
+        "Zutaten": [
+            {
+                "Name": "Gin",
+                "Menge": 20
+            }
+        ],
+        "Kommentar": "",
+        "Pre": "",
+        "Post": "",
+        "Wiki": ""
+    },
+    {
+        "Name": "Tonic",
+        "Zutaten": [
+            {
+                "Name": "Tonic",
                 "Menge": 20
             }
         ],
