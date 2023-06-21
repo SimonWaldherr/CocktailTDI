@@ -75,6 +75,8 @@ func setValve(valve int, status bool) {
 		time.Sleep(10 * time.Millisecond)
 		i2cDev2.Write([]byte{byte(bm2.Int())})
 		time.Sleep(10 * time.Millisecond)
+		i2cDev2.Write([]byte{byte(bm2.Int())})
+		time.Sleep(10 * time.Millisecond)
 		mutex.Unlock()
 		return
 	}
@@ -82,6 +84,8 @@ func setValve(valve int, status bool) {
 	bm1.Set(pin, !status)
 
 	mutex.Lock()
+	time.Sleep(10 * time.Millisecond)
+	i2cDev1.Write([]byte{byte(bm1.Int())})
 	time.Sleep(10 * time.Millisecond)
 	i2cDev1.Write([]byte{byte(bm1.Int())})
 	time.Sleep(10 * time.Millisecond)
@@ -95,6 +99,8 @@ func setPump(status bool) {
 	time.Sleep(10 * time.Millisecond)
 	i2cDev2.Write([]byte{byte(bm2.Int())})
 	time.Sleep(10 * time.Millisecond)
+	i2cDev2.Write([]byte{byte(bm2.Int())})
+	time.Sleep(10 * time.Millisecond)
 	mutex.Unlock()
 }
 
@@ -102,6 +108,8 @@ func setMasterValve(status bool) {
 	bm2.Set(1, !status)
 
 	mutex.Lock()
+	time.Sleep(10 * time.Millisecond)
+	i2cDev2.Write([]byte{byte(bm2.Int())})
 	time.Sleep(10 * time.Millisecond)
 	i2cDev2.Write([]byte{byte(bm2.Int())})
 	time.Sleep(10 * time.Millisecond)
