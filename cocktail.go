@@ -90,6 +90,12 @@ func setValve(valve int, status bool) {
 	i2cDev1.Write([]byte{byte(bm1.Int())})
 	time.Sleep(10 * time.Millisecond)
 	mutex.Unlock()
+	
+	mutex.Lock()
+	time.Sleep(10 * time.Millisecond)
+	nau7802d, _ = nau7802.Initialize()
+	time.Sleep(10 * time.Millisecond)
+	mutex.Unlock()
 }
 
 func setPump(status bool) {
@@ -105,7 +111,7 @@ func setPump(status bool) {
 }
 
 func setMasterValve(status bool) {
-	bm2.Set(1, !status)
+	bm2.Set(1, status)
 
 	mutex.Lock()
 	time.Sleep(10 * time.Millisecond)
@@ -396,6 +402,15 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 					}
 					continue
 				}
+				
+				if data2 < -100000 {
+					mutex.Lock()
+					time.Sleep(10 * time.Millisecond)
+					nau7802d, _ = nau7802.Initialize()
+					time.Sleep(10 * time.Millisecond)
+					mutex.Unlock()
+					continue
+				}
 
 				predata = data
 				//data = (float64(data2-hx711.AdjustZero) / hx711.AdjustScale) - taraAvg
@@ -429,6 +444,8 @@ func main() {
 	flag.Float64Var(&AdjustScale, "scale", 62.8, "adjust scale value")
 	flag.StringVar(&ScaleType, "scaleType", "nau7802", "use hx711, nau7802 or nau7802py scale")
 	flag.Parse()
+	
+	var nau_zero float64
 
 	if ScaleType == "hx711" {
 		err := hx711.HostInit()
@@ -443,12 +460,29 @@ func main() {
 		mutex.Lock()
 		time.Sleep(10 * time.Millisecond)
 		nau7802d, err = nau7802.Initialize()
+		nau_zero, _ := nau7802d.GetWeight(true, 1)
+		fmt.Println(nau_zero)
 		time.Sleep(10 * time.Millisecond)
 		mutex.Unlock()
 		if err != nil {
 			fmt.Println("nau7802.Initialize error:", err)
 		}
 	}
+	
+	
+	
+	go func() {
+		for {
+			weight, err := nau7802d.GetWeight(true, 1)
+			if err != nil {
+				fmt.Println("## nau7802.GetWeight error:", err)
+			} else {
+				fmt.Println("## nau7802.GetWeight:", weight-nau_zero)
+			}
+			time.Sleep(1 * time.Second)
+		}
+	}()
+	
 
 	//dir := gopath.WD()
 	dir := "/home/pi/cocktail/ui/www/"
@@ -618,6 +652,7 @@ func main() {
 				setValve(zutatPin, false)
 
 				time.Sleep(time.Second * 1)
+
 			}
 
 			fmt.Printf("  Kommentar: %#v\n\n", rezept.Kommentar)
