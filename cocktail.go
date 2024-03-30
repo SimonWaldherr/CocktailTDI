@@ -91,11 +91,11 @@ func setValve(valve int, status bool) {
 	time.Sleep(10 * time.Millisecond)
 	mutex.Unlock()
 	
-	mutex.Lock()
-	time.Sleep(10 * time.Millisecond)
-	nau7802d, _ = nau7802.Initialize()
-	time.Sleep(10 * time.Millisecond)
-	mutex.Unlock()
+	//mutex.Lock()
+	//time.Sleep(10 * time.Millisecond)
+	//nau7802d, _ = nau7802.Initialize()
+	//time.Sleep(10 * time.Millisecond)
+	//mutex.Unlock()
 }
 
 func setPump(status bool) {
@@ -104,7 +104,7 @@ func setPump(status bool) {
 	mutex.Lock()
 	time.Sleep(10 * time.Millisecond)
 	i2cDev2.Write([]byte{byte(bm2.Int())})
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 	i2cDev2.Write([]byte{byte(bm2.Int())})
 	time.Sleep(10 * time.Millisecond)
 	mutex.Unlock()
@@ -116,7 +116,7 @@ func setMasterValve(status bool) {
 	mutex.Lock()
 	time.Sleep(10 * time.Millisecond)
 	i2cDev2.Write([]byte{byte(bm2.Int())})
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 	i2cDev2.Write([]byte{byte(bm2.Int())})
 	time.Sleep(10 * time.Millisecond)
 	mutex.Unlock()
@@ -366,24 +366,34 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 			var data, predata float64
 
 			fmt.Println("Tara")
-
-			for i = 0; i < 5; i++ {
-				time.Sleep(600 * time.Microsecond)
-
+			
+			var taraAvg float64 = -200000
+			
+			for taraAvg < -100000 {
 				mutex.Lock()
-				time.Sleep(30 * time.Millisecond)
-				data, err := nau7802d.GetWeight(true, 1)
-				time.Sleep(30 * time.Millisecond)
+				time.Sleep(10 * time.Millisecond)
+				nau7802d, _ = nau7802.Initialize()
+				time.Sleep(10 * time.Millisecond)
 				mutex.Unlock()
-
-				if err != nil {
-					fmt.Println("ReadDataRaw error:", err)
-					continue
+				time.Sleep(20 * time.Millisecond)
+				for i = 0; i < 5; i++ {
+					time.Sleep(600 * time.Microsecond)
+					
+					mutex.Lock()
+					time.Sleep(30 * time.Millisecond)
+					data, err := nau7802d.GetWeight(true, 1)
+					time.Sleep(30 * time.Millisecond)
+					mutex.Unlock()
+					
+					if err != nil {
+						fmt.Println("ReadDataRaw error:", err)
+						continue
+					}
+					
+					tara = append(tara, data)
 				}
-
-				tara = append(tara, data)
+				taraAvg = float64(xmath.Round(xmath.Arithmetic(tara)))
 			}
-			taraAvg := float64(xmath.Round(xmath.Arithmetic(tara)))
 
 			fmt.Printf("New tara set to: %v\n", taraAvg)
 
@@ -628,13 +638,20 @@ func main() {
 			}
 			fmt.Printf("Cocktail: %#v\n", rezept.Name)
 			fmt.Printf("  Zutaten:\n")
+			
+			//var vorherigeZutat int = 0
+			
 			for _, zut := range rezept.Zutaten {
+				//setPump(false)
+				//setMasterValve(false)
+				//setValve(vorherigeZutat, false)
+				
 				fmt.Printf("    %v: %v\n", zut.Name, zut.Menge)
 				zutatPin := pins[zutaten[zut.Name]]
 
 				fmt.Println("starting go func")
 
-				go func() {
+				//go func() {
 					time.Sleep(1800 * time.Millisecond)
 					setPump(true)
 					//setMasterValve(false)
@@ -643,17 +660,25 @@ func main() {
 					setMasterValve(true)
 					time.Sleep(100 * time.Millisecond)
 					setValve(zutatPin, true)
-				}()
+				//}()
 
 				scaleDelay(int(as.Int(zut.Menge)), 2*time.Minute)
 
 				setPump(false)
+				time.Sleep(10 * time.Millisecond)
 				setMasterValve(false)
+				time.Sleep(10 * time.Millisecond)
 				setValve(zutatPin, false)
+				
+				//vorherigeZutat = zutatPin
 
-				time.Sleep(time.Second * 1)
+				time.Sleep(time.Second * 2)
 
 			}
+			
+			//setPump(false)
+			//setMasterValve(false)
+			//setValve(vorherigeZutat, false)
 
 			fmt.Printf("  Kommentar: %#v\n\n", rezept.Kommentar)
 
