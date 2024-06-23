@@ -67,16 +67,22 @@ const (
 func setValve(valve int, status bool) {
 	var pin int
 	pin = pins[valve]
+	
+	fmt.Printf("set valve %d on pin %d to %d\n", valve, pin, status)
 
 	if pin > 7 {
 		pin = pin - 6
 		bm2.Set(pin, !status)
 		mutex.Lock()
 		time.Sleep(10 * time.Millisecond)
-		i2cDev2.Write([]byte{byte(bm2.Int())})
-		time.Sleep(10 * time.Millisecond)
-		i2cDev2.Write([]byte{byte(bm2.Int())})
-		time.Sleep(10 * time.Millisecond)
+		err := i2cDev2.Write([]byte{byte(bm2.Int())})
+		for err != nil {
+			fmt.Println(err)
+			time.Sleep(10 * time.Millisecond)
+			err = i2cDev2.Write([]byte{byte(bm2.Int())})
+			time.Sleep(10 * time.Millisecond)
+		}
+		
 		mutex.Unlock()
 		return
 	}
@@ -85,10 +91,13 @@ func setValve(valve int, status bool) {
 
 	mutex.Lock()
 	time.Sleep(10 * time.Millisecond)
-	i2cDev1.Write([]byte{byte(bm1.Int())})
-	time.Sleep(10 * time.Millisecond)
-	i2cDev1.Write([]byte{byte(bm1.Int())})
-	time.Sleep(10 * time.Millisecond)
+	err := i2cDev1.Write([]byte{byte(bm1.Int())})
+	for err != nil {
+		fmt.Println(err)
+		time.Sleep(10 * time.Millisecond)
+		err = i2cDev1.Write([]byte{byte(bm1.Int())})
+		time.Sleep(10 * time.Millisecond)
+	}
 	mutex.Unlock()
 	
 	//mutex.Lock()
@@ -99,30 +108,45 @@ func setValve(valve int, status bool) {
 }
 
 func setPump(status bool) {
+	fmt.Printf("set pump to %d\n", status)
 	bm2.Set(0, !status)
 
 	mutex.Lock()
 	time.Sleep(10 * time.Millisecond)
-	i2cDev2.Write([]byte{byte(bm2.Int())})
-	time.Sleep(100 * time.Millisecond)
-	i2cDev2.Write([]byte{byte(bm2.Int())})
-	time.Sleep(10 * time.Millisecond)
+	err := i2cDev2.Write([]byte{byte(bm2.Int())})
+	for err != nil {
+		fmt.Println(err)
+		time.Sleep(10 * time.Millisecond)
+		err = i2cDev2.Write([]byte{byte(bm2.Int())})
+		time.Sleep(10 * time.Millisecond)
+	}
 	mutex.Unlock()
 }
 
 func setMasterValve(status bool) {
+	fmt.Printf("set master valve to %d\n", status)
 	bm2.Set(1, status)
 
 	mutex.Lock()
 	time.Sleep(10 * time.Millisecond)
-	i2cDev2.Write([]byte{byte(bm2.Int())})
-	time.Sleep(100 * time.Millisecond)
-	i2cDev2.Write([]byte{byte(bm2.Int())})
-	time.Sleep(10 * time.Millisecond)
+	err := i2cDev2.Write([]byte{byte(bm2.Int())})
+	var i int = 0
+	for err != nil {
+		fmt.Println(err)
+		time.Sleep(50 * time.Millisecond)
+		err = i2cDev2.Write([]byte{byte(bm2.Int())})
+		time.Sleep(50 * time.Millisecond)
+		i++
+		
+		if i > 5 {
+			break
+		}
+	}
 	mutex.Unlock()
 }
 
 func setPowerLED(status bool) {
+	fmt.Printf("set power-led to %d\n", status)
 	pin := rpio.Pin(13)
 	pin.Output() // Output mode
 	if status == true {
@@ -133,6 +157,7 @@ func setPowerLED(status bool) {
 }
 
 func setProgressLED(status bool) {
+	fmt.Printf("set progress-led to %d\n", status)
 	pin := rpio.Pin(21)
 	pin.Output() // Output mode
 	if status == true {
@@ -381,12 +406,16 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 					
 					mutex.Lock()
 					time.Sleep(30 * time.Millisecond)
-					data, err := nau7802d.GetWeight(true, 1)
+					data, err := nau7802d.GetWeight(true, 3)
 					time.Sleep(30 * time.Millisecond)
 					mutex.Unlock()
 					
 					if err != nil {
 						fmt.Println("ReadDataRaw error:", err)
+						continue
+					}
+					
+					if data < -100000 {
 						continue
 					}
 					
@@ -402,7 +431,7 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 
 				mutex.Lock()
 				time.Sleep(30 * time.Millisecond)
-				data2, err := nau7802d.GetWeight(true, 1)
+				data2, err := nau7802d.GetWeight(true, 3)
 				time.Sleep(30 * time.Millisecond)
 				mutex.Unlock()
 
@@ -470,7 +499,7 @@ func main() {
 		mutex.Lock()
 		time.Sleep(10 * time.Millisecond)
 		nau7802d, err = nau7802.Initialize()
-		nau_zero, _ := nau7802d.GetWeight(true, 1)
+		nau_zero, _ := nau7802d.GetWeight(true, 3)
 		fmt.Println(nau_zero)
 		time.Sleep(10 * time.Millisecond)
 		mutex.Unlock()
@@ -483,7 +512,7 @@ func main() {
 	
 	go func() {
 		for {
-			weight, err := nau7802d.GetWeight(true, 1)
+			weight, err := nau7802d.GetWeight(true, 3)
 			if err != nil {
 				fmt.Println("## nau7802.GetWeight error:", err)
 			} else {
@@ -639,12 +668,12 @@ func main() {
 			fmt.Printf("Cocktail: %#v\n", rezept.Name)
 			fmt.Printf("  Zutaten:\n")
 			
-			//var vorherigeZutat int = 0
+			var vorherigeZutat int = 0
 			
 			for _, zut := range rezept.Zutaten {
 				//setPump(false)
 				//setMasterValve(false)
-				//setValve(vorherigeZutat, false)
+				setValve(vorherigeZutat, false)
 				
 				fmt.Printf("    %v: %v\n", zut.Name, zut.Menge)
 				zutatPin := pins[zutaten[zut.Name]]
@@ -655,7 +684,7 @@ func main() {
 					time.Sleep(1800 * time.Millisecond)
 					setPump(true)
 					//setMasterValve(false)
-					time.Sleep(100 * time.Millisecond)
+					time.Sleep(2 * time.Second)
 					//time.Sleep(6 * time.Second)
 					setMasterValve(true)
 					time.Sleep(100 * time.Millisecond)
@@ -664,21 +693,27 @@ func main() {
 
 				scaleDelay(int(as.Int(zut.Menge)), 2*time.Minute)
 
-				setPump(false)
-				time.Sleep(10 * time.Millisecond)
 				setMasterValve(false)
 				time.Sleep(10 * time.Millisecond)
-				setValve(zutatPin, false)
+				setPump(false)
+				time.Sleep(1000 * time.Millisecond)
+				setPump(false)
 				
-				//vorherigeZutat = zutatPin
+				time.Sleep(2 * time.Second)
+				//setValve(zutatPin, false)
+				time.Sleep(10 * time.Millisecond)
+				setPump(false)
+				
+				vorherigeZutat = zutatPin
 
 				time.Sleep(time.Second * 2)
 
 			}
 			
-			//setPump(false)
-			//setMasterValve(false)
-			//setValve(vorherigeZutat, false)
+			time.Sleep(10 * time.Millisecond)
+			setPump(false)
+			setMasterValve(false)
+			setValve(vorherigeZutat, false)
 
 			fmt.Printf("  Kommentar: %#v\n\n", rezept.Kommentar)
 
