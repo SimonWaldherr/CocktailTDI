@@ -16,7 +16,6 @@ import (
 	"time"
 	"unsafe"
 
-	hx711 "github.com/SimonWaldherr/hx711go"
 	nau7802 "github.com/SimonWaldherr/nau7802"
 
 	"github.com/edsrzf/mmap-go"
@@ -70,7 +69,7 @@ type TCA9548A struct {
 
 func NewTCA9548A(address int) (*TCA9548A, error) {
 	dev, err := i2c.Open(&i2c.Devfs{Dev: "/dev/i2c-1"}, address)
-	if (err != nil) {
+	if err != nil {
 		return nil, err
 	}
 
@@ -291,290 +290,104 @@ func init() {
 }
 
 func scaleDelay(scaleDelta int, timeout time.Duration) {
-	if ScaleType == "hx711" {
-		runtime.GC()
-		hx711, err := hx711.NewHx711("6", "5")
+	c1 := make(chan bool, 1)
+	go func() {
+		var tara = []float64{}
+		var i int
+		var data, predata float64
 
-		if err != nil {
-			fmt.Println("NewHx711 error:", err)
-			return
-		}
+		fmt.Println("Tara")
 
-		defer hx711.Shutdown()
+		var taraAvg float64 = -200000
 
-		for {
-			err = hx711.Reset()
-			if err == nil {
-				break
+		for taraAvg < -100000 {
+			mutex.Lock()
+			time.Sleep(10 * time.Millisecond)
+
+			i2c_multiplexer, _ := NewTCA9548A(0x70)
+			err := i2c_multiplexer.SelectChannel(0)
+			if err != nil {
+				fmt.Println(err)
 			}
-			log.Print("hx711 BackgroundReadMovingAvgs Reset error:", err)
-			time.Sleep(time.Second)
-		}
 
-		hx711.AdjustZero = AdjustZero
-		hx711.AdjustScale = AdjustScale
+			dev, err := i2c.Open(&i2c.Devfs{Dev: "/dev/i2c-1"}, 0x2A)
+			if err != nil {
+				fmt.Println(err)
+			}
 
-		c1 := make(chan bool, 1)
-		go func() {
-			var tara = []float64{}
-			var i int
-			var data, predata float64
+			nau7802d, _ = nau7802.InitializeWithConnection(dev)
 
-			fmt.Println("Tara")
-
+			time.Sleep(10 * time.Millisecond)
+			mutex.Unlock()
+			time.Sleep(20 * time.Millisecond)
 			for i = 0; i < 5; i++ {
 				time.Sleep(600 * time.Microsecond)
 
-				data, err := hx711.ReadDataMedian(3)
+				mutex.Lock()
+				time.Sleep(30 * time.Millisecond)
+				data, err := nau7802d.GetWeight(true, 3)
+				time.Sleep(30 * time.Millisecond)
+				mutex.Unlock()
+
 				if err != nil {
 					fmt.Println("ReadDataRaw error:", err)
 					continue
 				}
 
-				tara = append(tara, data)
-			}
-			taraAvg := float64(xmath.Round(xmath.Arithmetic(tara)))
-
-			fmt.Printf("New tara set to: %v\n", taraAvg)
-
-			for {
-				time.Sleep(10 * time.Millisecond)
-				data2, err := hx711.ReadDataRaw()
-
-				if err != nil {
-					if fmt.Sprintln("ReadDataRaw error:", err) != "ReadDataRaw error: waitForDataReady error: timeout\n" {
-						fmt.Println("ReadDataRaw error:", err)
-					}
+				if data < -100000 {
 					continue
 				}
-
-				predata = data
-				data = (float64(data2-hx711.AdjustZero) / hx711.AdjustScale) - taraAvg
-
-				if int(data) > scaleDelta && int(predata) > scaleDelta {
-					fmt.Printf("set weight reached. weight is: %d\n", xmath.Round(data))
-					c1 <- true
-					return
-				}
-			}
-		}()
-
-		select {
-		case _ = <-c1:
-			return
-		case <-time.After(timeout):
-			fmt.Println("timeout")
-			return
-		}
-	} else if ScaleType == "nau7802py" {
-		// Open the shared memory file
-		file, err := os.OpenFile("my_shared_memory", os.O_RDONLY, 0644)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer file.Close()
-
-		// Map the shared memory into the Go process
-		smdata, err := mmap.Map(file, mmap.RDONLY, 0)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer smdata.Unmap()
-
-		c1 := make(chan bool, 1)
-		go func() {
-			var tara = []float32{}
-			var i int
-			var data, predata float32
-
-			fmt.Println("Tara")
-
-			for i = 0; i < 5; i++ {
-				time.Sleep(600 * time.Microsecond)
-
-				data := *(*float32)(unsafe.Pointer(&smdata[0])) * 1000
-				fmt.Printf("data sm: %v\n", data)
 
 				tara = append(tara, data)
 			}
-			taraAvg := float32(xmath.Round(xmath.Arithmetic(tara)))
-
-			fmt.Printf("New tara set to: %v\n", taraAvg)
-
-			for {
-				time.Sleep(10 * time.Millisecond)
-				data2 := *(*float32)(unsafe.Pointer(&smdata[0])) * 1000
-				fmt.Printf("data2 sm: %v, delta: %v\n", data2, scaleDelta)
-
-				if err != nil {
-					if fmt.Sprintln("ReadDataRaw error:", err) != "ReadDataRaw error: waitForDataReady error: timeout\n" {
-						fmt.Println("ReadDataRaw error:", err)
-					}
-					continue
-				}
-
-				predata = data
-				data = data2 - taraAvg
-
-				if int(data) > scaleDelta && int(predata) > scaleDelta {
-					fmt.Printf("set weight reached. weight is: %d\n", xmath.Round(float64(data)))
-					c1 <- true
-					return
-				}
-			}
-		}()
-
-		select {
-		case _ = <-c1:
-			return
-		case <-time.After(timeout):
-			fmt.Println("timeout")
-			return
+			taraAvg = float64(xmath.Round(xmath.Arithmetic(tara)))
 		}
 
-		/*
-			for {
-				// Read data from the shared memory
-				value := *(*float32)(unsafe.Pointer(&data[0]))
+		fmt.Printf("New tara set to: %v\n", taraAvg)
 
-				// Print the value read from shared memory
-				fmt.Println(value)
-				time.Sleep(500 * time.Millisecond)
+		for {
+			time.Sleep(20 * time.Millisecond)
+
+			mutex.Lock()
+			time.Sleep(30 * time.Millisecond)
+			data2, err := nau7802d.GetWeight(true, 3)
+			time.Sleep(30 * time.Millisecond)
+			mutex.Unlock()
+
+			if err != nil {
+				if fmt.Sprintln("ReadDataRaw error:", err) != "ReadDataRaw error: waitForDataReady error: timeout\n" {
+					fmt.Println("ReadDataRaw error:", err)
+				}
+				continue
 			}
-		*/
-	} else if ScaleType == "nau7802" {
-		c1 := make(chan bool, 1)
-		go func() {
-			var tara = []float64{}
-			var i int
-			var data, predata float64
 
-			fmt.Println("Tara")
-
-			var taraAvg float64 = -200000
-
-			for taraAvg < -100000 {
+			if data2 < -100000 {
 				mutex.Lock()
 				time.Sleep(10 * time.Millisecond)
-				//nau7802d, _ = nau7802.Initialize()
-
-				i2c_multiplexer, _ := NewTCA9548A(0x70)
-				
-				for i2 := 0; i2 < 7; i2++ {
-					err := i2c_multiplexer.SelectChannel(byte(i2))
-					
-					if err != nil {
-						fmt.Println(err)
-					}
-					
-					i2cDevice, err := i2c.Open(&i2c.Devfs{Dev: "/dev/i2c-1"}, 0x20)
-					if err != nil {
-						panic(err)
-					}
-					defer i2cDevice.Close()
-					
-					bitmask := bitmask.New(0b11111111)
-					
-					i2cDevice.Write([]byte(strconv.Itoa(bitmask.Int())))
-					time.Sleep(1500 * time.Millisecond)
-					
-					for {
-						for i := 0; i < 8; i++ {
-							bitmask.Set(i, false)
-							i2cDevice.Write([]byte{byte(bitmask.Int())})
-						}
-						time.Sleep(1500 * time.Millisecond)
-						for i := 0; i < 8; i++ {
-							bitmask.Set(i, true)
-							i2cDevice.Write([]byte{byte(bitmask.Int())})
-						}
-						time.Sleep(1500 * time.Millisecond)
-					}
-				}
-				
-				
-
-				dev, err := i2c.Open(&i2c.Devfs{Dev: "/dev/i2c-1"}, 0x2A)
-				if err != nil {
-					fmt.Println(err)
-				}
-
-				nau7802d, _ = nau7802.InitializeWithConnection(dev)
-
+				nau7802d, _ = nau7802.Initialize()
 				time.Sleep(10 * time.Millisecond)
 				mutex.Unlock()
-				time.Sleep(20 * time.Millisecond)
-				for i = 0; i < 5; i++ {
-					time.Sleep(600 * time.Microsecond)
-
-					mutex.Lock()
-					time.Sleep(30 * time.Millisecond)
-					data, err := nau7802d.GetWeight(true, 3)
-					time.Sleep(30 * time.Millisecond)
-					mutex.Unlock()
-
-					if err != nil {
-						fmt.Println("ReadDataRaw error:", err)
-						continue
-					}
-
-					if data < -100000 {
-						continue
-					}
-
-					tara = append(tara, data)
-				}
-				taraAvg = float64(xmath.Round(xmath.Arithmetic(tara)))
+				continue
 			}
 
-			fmt.Printf("New tara set to: %v\n", taraAvg)
+			predata = data
+			data = data2 - taraAvg
 
-			for {
-				time.Sleep(20 * time.Millisecond)
-
-				mutex.Lock()
-				time.Sleep(30 * time.Millisecond)
-				data2, err := nau7802d.GetWeight(true, 3)
-				time.Sleep(30 * time.Millisecond)
-				mutex.Unlock()
-
-				if err != nil {
-					if fmt.Sprintln("ReadDataRaw error:", err) != "ReadDataRaw error: waitForDataReady error: timeout\n" {
-						fmt.Println("ReadDataRaw error:", err)
-					}
-					continue
-				}
-
-				if data2 < -100000 {
-					mutex.Lock()
-					time.Sleep(10 * time.Millisecond)
-					nau7802d, _ = nau7802.Initialize()
-					time.Sleep(10 * time.Millisecond)
-					mutex.Unlock()
-					continue
-				}
-
-				predata = data
-				//data = (float64(data2-hx711.AdjustZero) / hx711.AdjustScale) - taraAvg
-				data = data2 - taraAvg
-
-				if int(data) > scaleDelta && int(predata) > scaleDelta {
-					fmt.Printf("set weight reached. weight is: %d\n", xmath.Round(data))
-					c1 <- true
-					return
-				}
+			if int(data) > scaleDelta && int(predata) > scaleDelta {
+				fmt.Printf("set weight reached. weight is: %d\n", xmath.Round(data))
+				c1 <- true
+				return
 			}
-		}()
-
-		select {
-		case _ = <-c1:
-			return
-		case <-time.After(timeout):
-			fmt.Println("timeout")
-			return
 		}
+	}()
+
+	select {
+	case _ = <-c1:
+		return
+	case <-time.After(timeout):
+		fmt.Println("timeout")
+		return
 	}
-
 }
 
 func main() {
@@ -589,68 +402,20 @@ func main() {
 
 	var nau_zero float64
 
-	if ScaleType == "hx711" {
-		err := hx711.HostInit()
-		if err != nil {
-			fmt.Println("HostInit error:", err)
-			return
-		}
-	} else if ScaleType == "nau7802py" {
-		// do nothing
-	} else if ScaleType == "nau7802" {
+	if ScaleType == "nau7802" {
 		var err error
 		mutex.Lock()
 		time.Sleep(10 * time.Millisecond)
-		
-		
+
 		i2c_multiplexer, _ := NewTCA9548A(0x70)
-		
-		/*
-		for i2 := 0; i2 < 7; i2++ {
-			err := i2c_multiplexer.SelectChannel(byte(i2))
-			
-			if err != nil {
-				fmt.Println(err)
-			}
-			
-			i2cDevice, err := i2c.Open(&i2c.Devfs{Dev: "/dev/i2c-1"}, 0x20)
-			if err != nil {
-				panic(err)
-			}
-			defer i2cDevice.Close()
-			
-			bitmask := bitmask.New(0b11111111)
-			
-			i2cDevice.Write([]byte(strconv.Itoa(bitmask.Int())))
-			time.Sleep(1500 * time.Millisecond)
-			
-			for {
-				for i := 0; i < 8; i++ {
-					bitmask.Set(i, false)
-					i2cDevice.Write([]byte{byte(bitmask.Int())})
-				}
-				time.Sleep(1500 * time.Millisecond)
-				for i := 0; i < 8; i++ {
-					bitmask.Set(i, true)
-					i2cDevice.Write([]byte{byte(bitmask.Int())})
-				}
-				time.Sleep(1500 * time.Millisecond)
-			}
-		}
-		
-		*/
-		
 		err = i2c_multiplexer.SelectChannel(0)
-		
+
 		dev, err := i2c.Open(&i2c.Devfs{Dev: "/dev/i2c-1"}, 0x2A)
 		if err != nil {
 			fmt.Println(err)
 		}
-		
+
 		nau7802d, _ = nau7802.InitializeWithConnection(dev)
-		
-		
-		//nau7802d, err = nau7802.Initialize()
 		nau_zero, _ := nau7802d.GetWeight(true, 3)
 		fmt.Println(nau_zero)
 		time.Sleep(10 * time.Millisecond)
@@ -672,65 +437,12 @@ func main() {
 		}
 	}()
 
-	//dir := gopath.WD()
 	dir := "/home/pi/cocktail/ui/www/"
 	fmt.Println("DIR 1:", gopath.WD())
 	fmt.Println("DIR 2:", dir)
 	HTTPD := gwv.NewWebServer(8081, 60)
 
-	/*
-		fmt.Println("opening gpio")
-
-		pumpe := rpio.Pin(pins[16])
-		master := rpio.Pin(pins[15])
-		entluft := rpio.Pin(pins[14])
-		pumpe.Input()
-		master.Input()
-		entluft.Input()
-	*/
-
-	//	defer rpio.Close()
-
-	/*
-		pinZutat := rpio.Pin(17)
-
-		for i := 1; i < 15; i++ {
-			pinZutat := rpio.Pin(pins[i])
-			pinZutat.Output()
-			time.Sleep(190 * time.Millisecond)
-			pinZutat.Input()
-			time.Sleep(190 * time.Millisecond)
-		}
-	*/
-	rand.Seed(time.Now().Unix())
-
-	setPowerLED(true)
-
 	HTTPD.URLhandler(
-		/*
-			gwv.URL("^/toggle/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
-				for i := 1; i < 17; i++ {
-					pinZutat := rpio.Pin(pins[i])
-					pinZutat.Output()
-					time.Sleep(time.Second / 5)
-					pinZutat.Input()
-				}
-				return "/", http.StatusFound
-			}, gwv.HTML),
-			gwv.URL("^/ein/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
-				pinZutat.Output()
-				return "/", http.StatusFound
-			}, gwv.HTML),
-			gwv.URL("^/aus/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
-				pinZutat.Input()
-				return "/", http.StatusFound
-			}, gwv.HTML),
-			gwv.URL("^/select/?.*$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
-				pin := strings.Replace(req.RequestURI, "/select/", "", 1)
-				pinZutat = rpio.Pin(pins[int(as.Int(pin))])
-				return "", http.StatusOK
-			}, gwv.HTML),
-		*/
 		gwv.URL("^/list/?$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
 			var ret string
 
@@ -751,45 +463,6 @@ func main() {
 			}
 			return ret, http.StatusOK
 		}, gwv.HTML),
-		/*
-			gwv.URL("^/test/\\d* /\\d*$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
-				pumpe.Output()
-				fmt.Println("pumpe an")
-				entluft.Input()
-				fmt.Println("entlüft aus")
-
-				fmt.Println(req.RequestURI)
-
-				testStr := strings.Replace(req.RequestURI, "/test/", "", 1)
-				testArr := strings.Split(testStr, "/")
-				testPin := rpio.Pin(pins[int(as.Int(testArr[0]))])
-
-				fmt.Println("starting go func")
-
-				go func() {
-					time.Sleep(2 * time.Second)
-					testPin.Output()
-					fmt.Println("pumpe an")
-					master.Output()
-					entluft.Input()
-				}()
-
-				fmt.Println("starting scale")
-
-				scaleDelay(int(as.Int(testArr[1])), 4*time.Minute)
-
-				fmt.Println("scale delay ready")
-
-				master.Input()
-				entluft.Output()
-				time.Sleep(time.Second * 5)
-				testPin.Input()
-				fmt.Println("stop pump")
-
-				pumpe.Input()
-				return "", http.StatusOK
-			}, gwv.HTML),
-		*/
 		gwv.URL("^/ozapftis/?.*$", func(rw http.ResponseWriter, req *http.Request) (string, int) {
 			wunschCocktail := strings.Replace(req.RequestURI, "/ozapftis/", "", 1)
 			setProgressLED(true)
@@ -820,25 +493,17 @@ func main() {
 			var vorherigeZutat int = 0
 
 			for _, zut := range rezept.Zutaten {
-				//setPump(false)
-				//setMasterValve(false)
 				setValve(vorherigeZutat, false)
 
 				fmt.Printf("    %v: %v\n", zut.Name, zut.Menge)
 				zutatPin := pins[zutaten[zut.Name]]
 
-				fmt.Println("starting go func")
-
-				//go func() {
 				time.Sleep(1800 * time.Millisecond)
 				setPump(true)
-				//setMasterValve(false)
 				time.Sleep(2 * time.Second)
-				//time.Sleep(6 * time.Second)
 				setMasterValve(true)
 				time.Sleep(100 * time.Millisecond)
 				setValve(zutatPin, true)
-				//}()
 
 				scaleDelay(int(as.Int(zut.Menge)), 2*time.Minute)
 
@@ -849,7 +514,6 @@ func main() {
 				setPump(false)
 
 				time.Sleep(2 * time.Second)
-				//setValve(zutatPin, false)
 				time.Sleep(10 * time.Millisecond)
 				setPump(false)
 
@@ -889,7 +553,6 @@ func main() {
 		gwv.Robots(as.String(cachedfile.Read(filepath.Join(dir, "..", "static", "robots.txt")))),
 		gwv.Favicon(filepath.Join(dir, "..", "static", "favicon.ico")),
 		gwv.StaticFiles("/", dir),
-		//gwv.StaticFiles("/ui/", dir),
 	)
 
 	HTTPD.Start()
