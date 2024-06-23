@@ -56,7 +56,9 @@ var mutex sync.Mutex
 var nau7802d *nau7802.NAU7802
 
 const (
-	TCA9548A_ADDRESS = 0x70 // Basisadresse des TCA9548A
+	TCA9548A_ADDRESS = 0x70 // Base address of the TCA9548A
+	I2C_ADDR         = "/dev/i2c-1"
+	I2C_ADDR2        = "/dev/i2c-0"
 )
 
 type TCA9548A struct {
@@ -68,7 +70,6 @@ func NewTCA9548A(address int) (*TCA9548A, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return &TCA9548A{Dev: dev}, nil
 }
 
@@ -79,123 +80,66 @@ func (p *TCA9548A) SelectChannel(channel byte) error {
 	return p.Dev.Write([]byte{1 << channel})
 }
 
-const (
-	I2C_ADDR  = "/dev/i2c-1"
-	I2C_ADDR2 = "/dev/i2c-0"
-)
+func handleI2CWrite(dev *i2c.Device, data []byte) error {
+	var err error
+	for i := 0; i < 5; i++ {
+		if err = dev.Write(data); err == nil {
+			return nil
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	return err
+}
 
 func setValve(valve int, status bool) {
-	var pin int
-	pin = pins[valve]
-
-	fmt.Printf("set valve %d on pin %d to %d\n", valve, pin, status)
+	pin := pins[valve]
+	fmt.Printf("set valve %d on pin %d to %v\n", valve, pin, status)
 
 	if pin > 7 {
-		pin = pin - 6
+		pin -= 6
 		bm2.Set(pin, !status)
-
-		mutex.Lock()
-		time.Sleep(10 * time.Millisecond)
-		i2c_multiplexer, err := NewTCA9548A(TCA9548A_ADDRESS)
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = i2c_multiplexer.SelectChannel(1) // Zweiter Kanal für PCF8574
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = i2cDev2.Write([]byte{byte(bm2.Int())})
-		for err != nil {
-			fmt.Println(err)
-			time.Sleep(10 * time.Millisecond)
-			err = i2cDev2.Write([]byte{byte(bm2.Int())})
-			time.Sleep(10 * time.Millisecond)
-		}
-		mutex.Unlock()
+		writeToI2C(i2cDev2, bm2)
 		return
 	}
-
 	bm1.Set(pin, !status)
+	writeToI2C(i2cDev1, bm1)
+}
 
+func writeToI2C(dev *i2c.Device, bm *bitmask.Bitmask) {
 	mutex.Lock()
+	defer mutex.Unlock()
 	time.Sleep(10 * time.Millisecond)
 	i2c_multiplexer, err := NewTCA9548A(TCA9548A_ADDRESS)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
-	err = i2c_multiplexer.SelectChannel(1) // Zweiter Kanal für PCF8574
-	if err != nil {
+	if err := i2c_multiplexer.SelectChannel(1); err != nil {
+		fmt.Println(err)
+		return
+	}
+	if err := handleI2CWrite(dev, []byte{byte(bm.Int())}); err != nil {
 		fmt.Println(err)
 	}
-	err = i2cDev1.Write([]byte{byte(bm1.Int())})
-	for err != nil {
-		fmt.Println(err)
-		time.Sleep(10 * time.Millisecond)
-		err = i2cDev1.Write([]byte{byte(bm1.Int())})
-		time.Sleep(10 * time.Millisecond)
-	}
-	mutex.Unlock()
 }
 
 func setPump(status bool) {
-	fmt.Printf("set pump to %d\n", status)
+	fmt.Printf("set pump to %v\n", status)
 	bm2.Set(0, !status)
-
-	mutex.Lock()
-	time.Sleep(10 * time.Millisecond)
-	i2c_multiplexer, err := NewTCA9548A(TCA9548A_ADDRESS)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = i2c_multiplexer.SelectChannel(1) // Zweiter Kanal für PCF8574
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = i2cDev2.Write([]byte{byte(bm2.Int())})
-	for err != nil {
-		fmt.Println(err)
-		time.Sleep(10 * time.Millisecond)
-		err = i2cDev2.Write([]byte{byte(bm2.Int())})
-		time.Sleep(10 * time.Millisecond)
-	}
-	mutex.Unlock()
+	writeToI2C(i2cDev2, bm2)
 }
 
 func setMasterValve(status bool) {
-	fmt.Printf("set master valve to %d\n", status)
+	fmt.Printf("set master valve to %v\n", status)
 	bm2.Set(1, status)
-
-	mutex.Lock()
-	time.Sleep(10 * time.Millisecond)
-	i2c_multiplexer, err := NewTCA9548A(TCA9548A_ADDRESS)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = i2c_multiplexer.SelectChannel(1) // Zweiter Kanal für PCF8574
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = i2cDev2.Write([]byte{byte(bm2.Int())})
-	var i int = 0
-	for err != nil {
-		fmt.Println(err)
-		time.Sleep(50 * time.Millisecond)
-		err = i2cDev2.Write([]byte{byte(bm2.Int())})
-		time.Sleep(50 * time.Millisecond)
-		i++
-
-		if i > 5 {
-			break
-		}
-	}
-	mutex.Unlock()
+	writeToI2C(i2cDev2, bm2)
 }
 
 func setPowerLED(status bool) {
-	fmt.Printf("set power-led to %d\n", status)
+	fmt.Printf("set power-led to %v\n", status)
 	pin := rpio.Pin(13)
-	pin.Output() // Output mode
-	if status == true {
+	pin.Output()
+	if status {
 		pin.High()
 	} else {
 		pin.Low()
@@ -203,10 +147,10 @@ func setPowerLED(status bool) {
 }
 
 func setProgressLED(status bool) {
-	fmt.Printf("set progress-led to %d\n", status)
+	fmt.Printf("set progress-led to %v\n", status)
 	pin := rpio.Pin(21)
-	pin.Output() // Output mode
-	if status == true {
+	pin.Output()
+	if status {
 		pin.High()
 	} else {
 		pin.Low()
@@ -255,8 +199,7 @@ func init() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = i2c_multiplexer.SelectChannel(1) // Zweiter Kanal für PCF8574
-	if err != nil {
+	if err := i2c_multiplexer.SelectChannel(1); err != nil {
 		fmt.Println(err)
 	}
 	i2cDev1.Write([]byte{byte(bm1.Int())})
