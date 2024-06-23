@@ -1,52 +1,26 @@
-# CocktailTDI_Beta
+# CocktailTDI
+**A simple, reproducible, affordable, modern, and customizable cocktail mixing machine.**
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/simonwaldherr/cocktailtdi)](https://goreportcard.com/report/github.com/simonwaldherr/cocktailtdi)  
 
 work in progress
 
-## howto
+CocktailTDI is a project aimed at creating a cocktail mixing machine using easy-to-access, affordable components. The main functionalities of this project include automated cocktail mixing, custom recipe creation, and the ability to scale based on user needs.
 
-### ad your public key to the raspberry
+## Technologies
+This project is implemented with:
+* Golang - for backend programming
+* Raspberry Pi - as the main controller
+* Framework7 - for frontend design
 
-```sh
-ssh-copy-id pi@192.168.178.202
-```
+## Installation
+The installation guide will be published shortly. For now, it's recommended to have basic knowledge about Golang, Raspberry Pi and Framework7 to install and run this project.
 
-### compile
+## Usage
+Once installed, you can use the machine to mix a variety of cocktails. The project also allows the addition of custom cocktail recipes for a more personalized experience.
 
-```sh
-./buildForRaspi.sh
-```
+## Contribution
+We welcome all contributions. If you want to contribute, please create an issue to discuss the changes or create a pull request. You can also contact us directly for any queries or suggestions.
 
-### copy to Raspberry
-
-```sh
-scp ./cocktail pi@192.168.178.202:/home/pi/bin/cocktail
-```
-
-### run
-
-```sh
-./cocktail
-```
-
-### reset IO-Pin
-
-```sh
-echo 5 > /sys/class/gpio/unexport
-```
-
-### fix bugs and add new features
-
-```sh
-vi cocktail.go
-```
-
-### commit to git
-
-```sh
-git commit -m "description"
-```
-
-### [repeat](#compile)
-
+## Licensing
+The source code is currently without an open-source license but will be under MIT License soon. All the texts and images will be under the CC-BY-SA license.
