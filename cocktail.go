@@ -208,7 +208,7 @@ func init() {
 	i2cDev2.Write([]byte{byte(bm2.Int())})
 	time.Sleep(10 * time.Millisecond)
 	mutex.Unlock()
-	
+
 	i2c_multiplexer.SelectChannel(0)
 
 	str, _ := file.Read("./zutaten.json")
