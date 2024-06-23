@@ -70,7 +70,7 @@ type TCA9548A struct {
 
 func NewTCA9548A(address int) (*TCA9548A, error) {
 	dev, err := i2c.Open(&i2c.Devfs{Dev: "/dev/i2c-1"}, address)
-	if err != nil {
+	if (err != nil) {
 		return nil, err
 	}
 
@@ -98,16 +98,24 @@ func setValve(valve int, status bool) {
 	if pin > 7 {
 		pin = pin - 6
 		bm2.Set(pin, !status)
+
 		mutex.Lock()
 		time.Sleep(10 * time.Millisecond)
-		err := i2cDev2.Write([]byte{byte(bm2.Int())})
+		i2c_multiplexer, err := NewTCA9548A(TCA9548A_ADDRESS)
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = i2c_multiplexer.SelectChannel(1) // Zweiter Kanal für PCF8574
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = i2cDev2.Write([]byte{byte(bm2.Int())})
 		for err != nil {
 			fmt.Println(err)
 			time.Sleep(10 * time.Millisecond)
 			err = i2cDev2.Write([]byte{byte(bm2.Int())})
 			time.Sleep(10 * time.Millisecond)
 		}
-
 		mutex.Unlock()
 		return
 	}
@@ -116,7 +124,15 @@ func setValve(valve int, status bool) {
 
 	mutex.Lock()
 	time.Sleep(10 * time.Millisecond)
-	err := i2cDev1.Write([]byte{byte(bm1.Int())})
+	i2c_multiplexer, err := NewTCA9548A(TCA9548A_ADDRESS)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = i2c_multiplexer.SelectChannel(1) // Zweiter Kanal für PCF8574
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = i2cDev1.Write([]byte{byte(bm1.Int())})
 	for err != nil {
 		fmt.Println(err)
 		time.Sleep(10 * time.Millisecond)
@@ -124,12 +140,6 @@ func setValve(valve int, status bool) {
 		time.Sleep(10 * time.Millisecond)
 	}
 	mutex.Unlock()
-
-	//mutex.Lock()
-	//time.Sleep(10 * time.Millisecond)
-	//nau7802d, _ = nau7802.Initialize()
-	//time.Sleep(10 * time.Millisecond)
-	//mutex.Unlock()
 }
 
 func setPump(status bool) {
@@ -138,7 +148,15 @@ func setPump(status bool) {
 
 	mutex.Lock()
 	time.Sleep(10 * time.Millisecond)
-	err := i2cDev2.Write([]byte{byte(bm2.Int())})
+	i2c_multiplexer, err := NewTCA9548A(TCA9548A_ADDRESS)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = i2c_multiplexer.SelectChannel(1) // Zweiter Kanal für PCF8574
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = i2cDev2.Write([]byte{byte(bm2.Int())})
 	for err != nil {
 		fmt.Println(err)
 		time.Sleep(10 * time.Millisecond)
@@ -154,7 +172,15 @@ func setMasterValve(status bool) {
 
 	mutex.Lock()
 	time.Sleep(10 * time.Millisecond)
-	err := i2cDev2.Write([]byte{byte(bm2.Int())})
+	i2c_multiplexer, err := NewTCA9548A(TCA9548A_ADDRESS)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = i2c_multiplexer.SelectChannel(1) // Zweiter Kanal für PCF8574
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = i2cDev2.Write([]byte{byte(bm2.Int())})
 	var i int = 0
 	for err != nil {
 		fmt.Println(err)
@@ -230,6 +256,14 @@ func init() {
 
 	mutex.Lock()
 	time.Sleep(10 * time.Millisecond)
+	i2c_multiplexer, err := NewTCA9548A(TCA9548A_ADDRESS)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = i2c_multiplexer.SelectChannel(1) // Zweiter Kanal für PCF8574
+	if err != nil {
+		fmt.Println(err)
+	}
 	i2cDev1.Write([]byte{byte(bm1.Int())})
 	i2cDev2.Write([]byte{byte(bm2.Int())})
 	time.Sleep(10 * time.Millisecond)
