@@ -7,18 +7,14 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"os"
 	"path/filepath"
 	"runtime"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
-	"unsafe"
 
 	nau7802 "github.com/SimonWaldherr/nau7802"
 
-	"github.com/edsrzf/mmap-go"
 	"github.com/stianeikeland/go-rpio"
 	"golang.org/x/exp/io/i2c"
 
