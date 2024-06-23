@@ -58,7 +58,7 @@ var nau7802d *nau7802.NAU7802
 const (
 	TCA9548A_ADDRESS = 0x70 // Base address of the TCA9548A
 	I2C_ADDR         = "/dev/i2c-1"
-	I2C_ADDR2        = "/dev/i2c-0"
+	I2C_ADDR2        = "/dev/i2c-1"
 )
 
 type TCA9548A struct {
@@ -86,6 +86,7 @@ func handleI2CWrite(dev *i2c.Device, data []byte) error {
 		if err = dev.Write(data); err == nil {
 			return nil
 		}
+		fmt.Println("Retrying I2C write:", err)
 		time.Sleep(10 * time.Millisecond)
 	}
 	return err
@@ -111,16 +112,17 @@ func writeToI2C(dev *i2c.Device, bm *bitmask.Bitmask) {
 	time.Sleep(10 * time.Millisecond)
 	i2c_multiplexer, err := NewTCA9548A(TCA9548A_ADDRESS)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error initializing I2C multiplexer:", err)
 		return
 	}
 	if err := i2c_multiplexer.SelectChannel(1); err != nil {
-		fmt.Println(err)
+		fmt.Println("Error selecting I2C channel:", err)
 		return
 	}
 	if err := handleI2CWrite(dev, []byte{byte(bm.Int())}); err != nil {
-		fmt.Println(err)
+		fmt.Println("I2C write error:", err)
 	}
+	i2c_multiplexer.SelectChannel(0)
 }
 
 func setPump(status bool) {
@@ -206,6 +208,8 @@ func init() {
 	i2cDev2.Write([]byte{byte(bm2.Int())})
 	time.Sleep(10 * time.Millisecond)
 	mutex.Unlock()
+	
+	i2c_multiplexer.SelectChannel(0)
 
 	str, _ := file.Read("./zutaten.json")
 	err = json.Unmarshal([]byte(str), &zutaten)
@@ -256,16 +260,16 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 
 			nau7802d, _ = nau7802.InitializeWithConnection(dev)
 
-			time.Sleep(10 * time.Millisecond)
+			//time.Sleep(10 * time.Millisecond)
 			mutex.Unlock()
-			time.Sleep(20 * time.Millisecond)
+			//time.Sleep(20 * time.Millisecond)
 			for i = 0; i < 5; i++ {
 				time.Sleep(600 * time.Microsecond)
 
 				mutex.Lock()
-				time.Sleep(30 * time.Millisecond)
+				//time.Sleep(30 * time.Millisecond)
 				data, err := nau7802d.GetWeight(true, 3)
-				time.Sleep(30 * time.Millisecond)
+				//time.Sleep(30 * time.Millisecond)
 				mutex.Unlock()
 
 				if err != nil {
@@ -285,12 +289,12 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 		fmt.Printf("New tara set to: %v\n", taraAvg)
 
 		for {
-			time.Sleep(20 * time.Millisecond)
+			//time.Sleep(20 * time.Millisecond)
 
 			mutex.Lock()
-			time.Sleep(30 * time.Millisecond)
+			//time.Sleep(30 * time.Millisecond)
 			data2, err := nau7802d.GetWeight(true, 3)
-			time.Sleep(30 * time.Millisecond)
+			//time.Sleep(30 * time.Millisecond)
 			mutex.Unlock()
 
 			if err != nil {
