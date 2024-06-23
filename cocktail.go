@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -60,6 +61,30 @@ var mutex sync.Mutex
 var nau7802d *nau7802.NAU7802
 
 const (
+	TCA9548A_ADDRESS = 0x70 // Basisadresse des TCA9548A
+)
+
+type TCA9548A struct {
+	Dev *i2c.Device
+}
+
+func NewTCA9548A(address int) (*TCA9548A, error) {
+	dev, err := i2c.Open(&i2c.Devfs{Dev: "/dev/i2c-1"}, address)
+	if err != nil {
+		return nil, err
+	}
+
+	return &TCA9548A{Dev: dev}, nil
+}
+
+func (p *TCA9548A) SelectChannel(channel byte) error {
+	if channel > 7 {
+		return fmt.Errorf("invalid channel: %d", channel)
+	}
+	return p.Dev.Write([]byte{1 << channel})
+}
+
+const (
 	I2C_ADDR  = "/dev/i2c-1"
 	I2C_ADDR2 = "/dev/i2c-0"
 )
@@ -67,7 +92,7 @@ const (
 func setValve(valve int, status bool) {
 	var pin int
 	pin = pins[valve]
-	
+
 	fmt.Printf("set valve %d on pin %d to %d\n", valve, pin, status)
 
 	if pin > 7 {
@@ -82,7 +107,7 @@ func setValve(valve int, status bool) {
 			err = i2cDev2.Write([]byte{byte(bm2.Int())})
 			time.Sleep(10 * time.Millisecond)
 		}
-		
+
 		mutex.Unlock()
 		return
 	}
@@ -99,7 +124,7 @@ func setValve(valve int, status bool) {
 		time.Sleep(10 * time.Millisecond)
 	}
 	mutex.Unlock()
-	
+
 	//mutex.Lock()
 	//time.Sleep(10 * time.Millisecond)
 	//nau7802d, _ = nau7802.Initialize()
@@ -137,7 +162,7 @@ func setMasterValve(status bool) {
 		err = i2cDev2.Write([]byte{byte(bm2.Int())})
 		time.Sleep(50 * time.Millisecond)
 		i++
-		
+
 		if i > 5 {
 			break
 		}
@@ -391,34 +416,78 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 			var data, predata float64
 
 			fmt.Println("Tara")
-			
+
 			var taraAvg float64 = -200000
-			
+
 			for taraAvg < -100000 {
 				mutex.Lock()
 				time.Sleep(10 * time.Millisecond)
-				nau7802d, _ = nau7802.Initialize()
+				//nau7802d, _ = nau7802.Initialize()
+
+				i2c_multiplexer, _ := NewTCA9548A(0x70)
+				
+				for i2 := 0; i2 < 7; i2++ {
+					err := i2c_multiplexer.SelectChannel(byte(i2))
+					
+					if err != nil {
+						fmt.Println(err)
+					}
+					
+					i2cDevice, err := i2c.Open(&i2c.Devfs{Dev: "/dev/i2c-1"}, 0x20)
+					if err != nil {
+						panic(err)
+					}
+					defer i2cDevice.Close()
+					
+					bitmask := bitmask.New(0b11111111)
+					
+					i2cDevice.Write([]byte(strconv.Itoa(bitmask.Int())))
+					time.Sleep(1500 * time.Millisecond)
+					
+					for {
+						for i := 0; i < 8; i++ {
+							bitmask.Set(i, false)
+							i2cDevice.Write([]byte{byte(bitmask.Int())})
+						}
+						time.Sleep(1500 * time.Millisecond)
+						for i := 0; i < 8; i++ {
+							bitmask.Set(i, true)
+							i2cDevice.Write([]byte{byte(bitmask.Int())})
+						}
+						time.Sleep(1500 * time.Millisecond)
+					}
+				}
+				
+				
+
+				dev, err := i2c.Open(&i2c.Devfs{Dev: "/dev/i2c-1"}, 0x2A)
+				if err != nil {
+					fmt.Println(err)
+				}
+
+				nau7802d, _ = nau7802.InitializeWithConnection(dev)
+
 				time.Sleep(10 * time.Millisecond)
 				mutex.Unlock()
 				time.Sleep(20 * time.Millisecond)
 				for i = 0; i < 5; i++ {
 					time.Sleep(600 * time.Microsecond)
-					
+
 					mutex.Lock()
 					time.Sleep(30 * time.Millisecond)
 					data, err := nau7802d.GetWeight(true, 3)
 					time.Sleep(30 * time.Millisecond)
 					mutex.Unlock()
-					
+
 					if err != nil {
 						fmt.Println("ReadDataRaw error:", err)
 						continue
 					}
-					
+
 					if data < -100000 {
 						continue
 					}
-					
+
 					tara = append(tara, data)
 				}
 				taraAvg = float64(xmath.Round(xmath.Arithmetic(tara)))
@@ -441,7 +510,7 @@ func scaleDelay(scaleDelta int, timeout time.Duration) {
 					}
 					continue
 				}
-				
+
 				if data2 < -100000 {
 					mutex.Lock()
 					time.Sleep(10 * time.Millisecond)
@@ -483,7 +552,7 @@ func main() {
 	flag.Float64Var(&AdjustScale, "scale", 62.8, "adjust scale value")
 	flag.StringVar(&ScaleType, "scaleType", "nau7802", "use hx711, nau7802 or nau7802py scale")
 	flag.Parse()
-	
+
 	var nau_zero float64
 
 	if ScaleType == "hx711" {
@@ -498,7 +567,56 @@ func main() {
 		var err error
 		mutex.Lock()
 		time.Sleep(10 * time.Millisecond)
-		nau7802d, err = nau7802.Initialize()
+		
+		
+		i2c_multiplexer, _ := NewTCA9548A(0x70)
+		
+		/*
+		for i2 := 0; i2 < 7; i2++ {
+			err := i2c_multiplexer.SelectChannel(byte(i2))
+			
+			if err != nil {
+				fmt.Println(err)
+			}
+			
+			i2cDevice, err := i2c.Open(&i2c.Devfs{Dev: "/dev/i2c-1"}, 0x20)
+			if err != nil {
+				panic(err)
+			}
+			defer i2cDevice.Close()
+			
+			bitmask := bitmask.New(0b11111111)
+			
+			i2cDevice.Write([]byte(strconv.Itoa(bitmask.Int())))
+			time.Sleep(1500 * time.Millisecond)
+			
+			for {
+				for i := 0; i < 8; i++ {
+					bitmask.Set(i, false)
+					i2cDevice.Write([]byte{byte(bitmask.Int())})
+				}
+				time.Sleep(1500 * time.Millisecond)
+				for i := 0; i < 8; i++ {
+					bitmask.Set(i, true)
+					i2cDevice.Write([]byte{byte(bitmask.Int())})
+				}
+				time.Sleep(1500 * time.Millisecond)
+			}
+		}
+		
+		*/
+		
+		err = i2c_multiplexer.SelectChannel(0)
+		
+		dev, err := i2c.Open(&i2c.Devfs{Dev: "/dev/i2c-1"}, 0x2A)
+		if err != nil {
+			fmt.Println(err)
+		}
+		
+		nau7802d, _ = nau7802.InitializeWithConnection(dev)
+		
+		
+		//nau7802d, err = nau7802.Initialize()
 		nau_zero, _ := nau7802d.GetWeight(true, 3)
 		fmt.Println(nau_zero)
 		time.Sleep(10 * time.Millisecond)
@@ -507,9 +625,7 @@ func main() {
 			fmt.Println("nau7802.Initialize error:", err)
 		}
 	}
-	
-	
-	
+
 	go func() {
 		for {
 			weight, err := nau7802d.GetWeight(true, 3)
@@ -521,7 +637,6 @@ func main() {
 			time.Sleep(1 * time.Second)
 		}
 	}()
-	
 
 	//dir := gopath.WD()
 	dir := "/home/pi/cocktail/ui/www/"
@@ -667,28 +782,28 @@ func main() {
 			}
 			fmt.Printf("Cocktail: %#v\n", rezept.Name)
 			fmt.Printf("  Zutaten:\n")
-			
+
 			var vorherigeZutat int = 0
-			
+
 			for _, zut := range rezept.Zutaten {
 				//setPump(false)
 				//setMasterValve(false)
 				setValve(vorherigeZutat, false)
-				
+
 				fmt.Printf("    %v: %v\n", zut.Name, zut.Menge)
 				zutatPin := pins[zutaten[zut.Name]]
 
 				fmt.Println("starting go func")
 
 				//go func() {
-					time.Sleep(1800 * time.Millisecond)
-					setPump(true)
-					//setMasterValve(false)
-					time.Sleep(2 * time.Second)
-					//time.Sleep(6 * time.Second)
-					setMasterValve(true)
-					time.Sleep(100 * time.Millisecond)
-					setValve(zutatPin, true)
+				time.Sleep(1800 * time.Millisecond)
+				setPump(true)
+				//setMasterValve(false)
+				time.Sleep(2 * time.Second)
+				//time.Sleep(6 * time.Second)
+				setMasterValve(true)
+				time.Sleep(100 * time.Millisecond)
+				setValve(zutatPin, true)
 				//}()
 
 				scaleDelay(int(as.Int(zut.Menge)), 2*time.Minute)
@@ -698,18 +813,18 @@ func main() {
 				setPump(false)
 				time.Sleep(1000 * time.Millisecond)
 				setPump(false)
-				
+
 				time.Sleep(2 * time.Second)
 				//setValve(zutatPin, false)
 				time.Sleep(10 * time.Millisecond)
 				setPump(false)
-				
+
 				vorherigeZutat = zutatPin
 
 				time.Sleep(time.Second * 2)
 
 			}
-			
+
 			time.Sleep(10 * time.Millisecond)
 			setPump(false)
 			setMasterValve(false)
